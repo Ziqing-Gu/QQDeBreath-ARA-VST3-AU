@@ -1,7 +1,26 @@
 # QQDeBreath ARA / VST3 / AU
 
-当前插件版本 / Current plugin version: **1.15**
+当前插件版本 / Current plugin version: **1.16**
 
+## 1.16 更新 / What's new in 1.16
+
+### 中文
+
+- **修复监听关闭后的偶发干声泄漏：** VST3 预览缓存发生短暂锁竞争时，不再绕过 `Voice / Breath / Noize` 开关回退到整路干声。
+- **Breath 与 Noize 同步修复：** Breath、Noize 以及三路全部关闭均遵守当前 checkbox 组合；实时线程仍不等待锁，缓存繁忙时使用保护性静音块。
+- **ARA 多轨实例隔离：** ARA 编辑器优先使用当前插件实例实际绑定的 playback regions，不再在多轨工程中回退到文档第一条 audio source 或第一份编辑状态。
+- **每轨独立状态：** 每个 ARA source 分别保存与恢复 regions、Monitor、Norm、Target、Global Gain、Global EQ 和波形显示参数，避免一轨覆盖另一轨。
+- **新增回归测试：** 自动覆盖 Breath/Noize 监听关闭、三路全关、录音/分析锁竞争以及两个普通插件实例的参数隔离。
+- **算法不变：** Breath 检测模型、region 边界、Fade/Norm/Gain/EQ 处理顺序和三轨导出算法未改变。
+
+### English
+
+- **Intermittent dry-monitor leak fixed:** VST3 preview no longer falls back to the full dry input when a recording or analysis cache lock is briefly busy.
+- **Breath and Noize are both covered:** Breath-off, Noize-off, and all-off checkbox combinations are protected without waiting on the realtime thread; a busy prepared cache yields a protective silent block.
+- **ARA multitrack instance isolation:** The editor now uses playback regions assigned to its own plug-in instance instead of falling back to the first source or first saved state in the ARA document.
+- **Per-source project state:** Regions, Monitor, Norm, Target, Global Gain, Global EQ, and waveform display parameters are stored and restored independently for each ARA source.
+- **Regression coverage:** Automated tests cover Breath/Noize routing, all-off monitoring, recording/analysis lock contention, and parameter isolation between two plain plug-in instances.
+- **Algorithm unchanged:** The detector model, region boundaries, Fade/Norm/Gain/EQ order, and three-stem export algorithm are unchanged.
 ## 1.15 更新 / What's new in 1.15
 
 ### 中文
@@ -100,7 +119,7 @@ Special thanks to Jason for providing training samples and helping test the dete
 
 ### 中文
 
-1.15 的 Breath 检测路径已完全使用原生 C++，保留多 Event ARA Load、动态 Pre/Post 频谱、Loop 预览、Global Gain、`Set as Default` 与逐 Breath Adjust/EQ。正常分析不再调用 `qq_debreath_bridge.exe` 或 `QQDeBreathTool.exe analyze-for-plugin`。
+1.16 的 Breath 检测路径已完全使用原生 C++，保留多 Event ARA Load、动态 Pre/Post 频谱、Loop 预览、Global Gain、`Set as Default` 与逐 Breath Adjust/EQ。正常分析不再调用 `qq_debreath_bridge.exe` 或 `QQDeBreathTool.exe analyze-for-plugin`。
 
 内嵌分析器使用与 QQDeBreathTool 1.11 相同的模型数据：
 
@@ -112,7 +131,7 @@ D655AF2BFB260866DE74319D179FDA0B007E6539711C572967BC0FC709E42AFE
 
 ### English
 
-The 1.15 Breath detection path is fully native C++. It retains multi-event ARA Load, dynamic Pre/Post spectra, loop preview, Global Gain, `Set as Default`, and per-Breath Adjust/EQ. Normal analysis no longer calls `qq_debreath_bridge.exe` or `QQDeBreathTool.exe analyze-for-plugin`.
+The 1.16 Breath detection path is fully native C++. It retains multi-event ARA Load, dynamic Pre/Post spectra, loop preview, Global Gain, `Set as Default`, and per-Breath Adjust/EQ. Normal analysis no longer calls `qq_debreath_bridge.exe` or `QQDeBreathTool.exe analyze-for-plugin`.
 
 The embedded analyzer uses the same model data as QQDeBreathTool 1.11:
 
@@ -268,5 +287,5 @@ GitHub Actions publishes separate Apple Silicon VST3, Intel VST3, Universal 2 AU
 
 详细安装步骤见 / See the detailed installation guides:
 
-- `docs/QQDeBreath-macOS-1.15-INSTALL-ZH-CN.txt`
-- `docs/QQDeBreath-macOS-1.15-INSTALL.txt`
+- `docs/QQDeBreath-macOS-1.16-INSTALL-ZH-CN.txt`
+- `docs/QQDeBreath-macOS-1.16-INSTALL.txt`

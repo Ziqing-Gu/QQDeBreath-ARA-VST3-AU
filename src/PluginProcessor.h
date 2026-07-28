@@ -39,13 +39,6 @@ struct QQDeBreathARASourceInfo
     juce::Array<PlaybackMapping> playbackMappings;
 };
 
-struct QQDeBreathARAPersistentState
-{
-    QQDeBreathARASourceInfo sourceInfo;
-    QQDeBreathBridgeAnalysisResult analysisResult;
-    juce::Array<double> regionPeakCache;
-};
-
 using QQDeBreathARASourceAudioBuffer = std::shared_ptr<const juce::AudioBuffer<float>>;
 
 struct QQDeBreathARAPlaybackParams
@@ -62,6 +55,14 @@ struct QQDeBreathARAPlaybackParams
     double breathGainDb = 0.0;
     double waveformDisplayGain = 1.0;
     QQDeBreathEqState breathEqState;
+};
+
+struct QQDeBreathARAPersistentState
+{
+    QQDeBreathARASourceInfo sourceInfo;
+    QQDeBreathBridgeAnalysisResult analysisResult;
+    juce::Array<double> regionPeakCache;
+    QQDeBreathARAPlaybackParams playbackParams;
 };
 
 class QQDeBreathAudioProcessor final : public juce::AudioProcessor,
@@ -142,10 +143,13 @@ public:
     juce::AudioProcessorARAExtension* getARAClientExtensions() override { return this; }
     bool isBoundToAraHost() const noexcept { return isBoundToARA(); }
     bool hasAraPlaybackRendererRole() const noexcept { return isPlaybackRenderer(); }
+    juce::Array<juce::ARAPlaybackRegion*> getAssignedAraPlaybackRegions() const;
 
     juce::AudioProcessorValueTreeState parameters;
 
 private:
+    friend class QQDeBreathMonitorRoutingProbe;
+
     void appendToRecordedBuffer(const juce::AudioBuffer<float>& buffer, double hostTimeSeconds);
     bool renderPreviewBlock(juce::AudioBuffer<float>& buffer, double hostTimeSeconds);
     double getInternalPreviewPositionUnlocked(double hostTimeSeconds) const;
@@ -160,6 +164,8 @@ private:
     double recordingStartTimelineSeconds = -1.0;
     std::atomic<bool> recordArmed { false };
     std::atomic<bool> recording { false };
+    std::atomic<bool> recordedPreviewReady { false };
+    std::atomic<bool> analysisPreviewReady { false };
     std::atomic<bool> restoredStateInformation { false };
     std::atomic<bool> globalDefaultsApplicationClaimed { false };
     std::atomic<int> droppedRecordBlocks { 0 };
@@ -191,10 +197,14 @@ public:
 
     void upsertPersistentState(const QQDeBreathARASourceInfo& sourceInfo,
                                const QQDeBreathBridgeAnalysisResult& analysisResult,
+                               const QQDeBreathARAPlaybackParams& playbackParams,
                                const juce::Array<double>& regionPeakCache = {});
     void updateRuntimePersistentState(const QQDeBreathARASourceInfo& sourceInfo,
                                       const QQDeBreathBridgeAnalysisResult& analysisResult,
+                                      const QQDeBreathARAPlaybackParams& playbackParams,
                                       const juce::Array<double>& regionPeakCache = {});
+    void setPlaybackParamsForSource(const QQDeBreathARASourceInfo& sourceInfo,
+                                    const QQDeBreathARAPlaybackParams& params);
     bool getPersistentStateForSource(const juce::String& sourceFingerprint,
                                      QQDeBreathARAPersistentState& state) const;
     bool tryGetPersistentStateForSource(const juce::String& sourceFingerprint,

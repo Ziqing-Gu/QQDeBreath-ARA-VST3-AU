@@ -5,9 +5,72 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <thread>
+
+class QQDeBreathMonitorRoutingProbe
+{
+public:
+    static void configurePreview(QQDeBreathAudioProcessor& processor, const juce::String& regionType)
+    {
+        {
+            const juce::ScopedLock lock(processor.recordedBufferLock);
+            processor.recordedBuffer.setSize(2, 512);
+            processor.recordedBuffer.clear();
+            for (auto channel = 0; channel < processor.recordedBuffer.getNumChannels(); ++channel)
+                processor.recordedBuffer.applyGain(channel, 0, 512, 0.0f);
+            for (auto channel = 0; channel < processor.recordedBuffer.getNumChannels(); ++channel)
+                juce::FloatVectorOperations::fill(processor.recordedBuffer.getWritePointer(channel), 0.5f, 512);
+            processor.recordedLengthSamples = 512;
+            processor.recordedSampleRate = 48000.0;
+            processor.recordingStartTimelineSeconds = 0.0;
+        }
+
+        QQDeBreathBridgeAnalysisResult result;
+        result.hasResult = true;
+        result.succeeded = true;
+        result.sampleRate = 48000;
+        result.channels = 2;
+        result.numSamples = 512;
+        result.durationSeconds = 512.0 / 48000.0;
+        QQDeBreathBridgeRegion region;
+        region.type = regionType;
+        region.startSample = 0;
+        region.endSample = 512;
+        region.startTime = 0.0;
+        region.endTime = result.durationSeconds;
+        result.regions.add(region);
+        result.breathCount = regionType.equalsIgnoreCase("Breath") ? 1 : 0;
+        result.noizeCount = regionType.equalsIgnoreCase("Noize") ? 1 : 0;
+
+        {
+            const juce::ScopedLock lock(processor.analysisLock);
+            processor.analysisResult = result;
+            processor.analysisRegionPeakCache.clear();
+            processor.analysisRegionPeakCache.add(0.5);
+        }
+        processor.recordedPreviewReady.store(true, std::memory_order_release);
+        processor.analysisPreviewReady.store(true, std::memory_order_release);
+        processor.clearInternalPreviewPosition();
+    }
+
+    static juce::CriticalSection& recordedLock(QQDeBreathAudioProcessor& processor) { return processor.recordedBufferLock; }
+    static juce::CriticalSection& analysisLock(QQDeBreathAudioProcessor& processor) { return processor.analysisLock; }
+};
 
 namespace
 {
+class PlayingTestPlayHead final : public juce::AudioPlayHead
+{
+public:
+    juce::Optional<PositionInfo> getPosition() const override
+    {
+        PositionInfo position;
+        position.setIsPlaying(true);
+        position.setTimeInSamples(0);
+        position.setTimeInSeconds(0.0);
+        return position;
+    }
+};
 bool setParameter(juce::AudioProcessorValueTreeState& state, const char* id, float value)
 {
     auto* parameter = state.getParameter(id);
@@ -21,6 +84,90 @@ bool setParameter(juce::AudioProcessorValueTreeState& state, const char* id, flo
 bool near(double actual, double expected, double tolerance = 0.001)
 {
     return std::abs(actual - expected) <= tolerance;
+}
+
+float renderPreviewMagnitude(QQDeBreathAudioProcessor& processor)
+{
+    juce::AudioBuffer<float> buffer(2, 128);
+    for (auto channel = 0; channel < buffer.getNumChannels(); ++channel)
+        juce::FloatVectorOperations::fill(buffer.getWritePointer(channel), 0.75f, buffer.getNumSamples());
+    juce::MidiBuffer midi;
+    processor.processBlock(buffer, midi);
+
+    auto magnitude = 0.0f;
+    for (auto channel = 0; channel < buffer.getNumChannels(); ++channel)
+        magnitude = juce::jmax(magnitude, buffer.getMagnitude(channel, 0, buffer.getNumSamples()));
+    return magnitude;
+}
+
+bool runMonitorRoutingProbe(QQDeBreathAudioProcessor& processor)
+{
+    PlayingTestPlayHead playHead;
+    processor.setPlayHead(&playHead);
+    processor.prepareToPlay(48000.0, 128);
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::bypass, 0.0f);
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::enableFade, 0.0f);
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::normalizeBreath, 0.0f);
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::breathGainDb, 0.0f);
+
+    QQDeBreathMonitorRoutingProbe::configurePreview(processor, "Breath");
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::monitorVoice, 0.0f);
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::monitorBreath, 0.0f);
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::monitorNoize, 1.0f);
+    const auto breathOff = renderPreviewMagnitude(processor);
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::monitorBreath, 1.0f);
+    const auto breathOn = renderPreviewMagnitude(processor);
+
+    QQDeBreathMonitorRoutingProbe::configurePreview(processor, "Noize");
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::monitorBreath, 0.0f);
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::monitorNoize, 0.0f);
+    const auto noizeOff = renderPreviewMagnitude(processor);
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::monitorNoize, 1.0f);
+    const auto noizeOn = renderPreviewMagnitude(processor);
+
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::monitorVoice, 0.0f);
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::monitorBreath, 0.0f);
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::monitorNoize, 0.0f);
+    const auto allOff = renderPreviewMagnitude(processor);
+
+    auto renderWhileLockHeld = [&](juce::CriticalSection& lockToHold)
+    {
+        juce::WaitableEvent locked;
+        juce::WaitableEvent release;
+        std::thread holder([&]
+        {
+            const juce::ScopedLock lock(lockToHold);
+            locked.signal();
+            release.wait(2000);
+        });
+        const auto acquired = locked.wait(2000);
+        const auto magnitude = acquired ? renderPreviewMagnitude(processor) : 1.0f;
+        release.signal();
+        holder.join();
+        return magnitude;
+    };
+
+    const auto recordingLockFallback = renderWhileLockHeld(QQDeBreathMonitorRoutingProbe::recordedLock(processor));
+    const auto analysisLockFallback = renderWhileLockHeld(QQDeBreathMonitorRoutingProbe::analysisLock(processor));
+    processor.setPlayHead(nullptr);
+
+    const auto passed = breathOff < 1.0e-6f
+                     && breathOn > 0.1f
+                     && noizeOff < 1.0e-6f
+                     && noizeOn > 0.1f
+                     && allOff < 1.0e-6f
+                     && recordingLockFallback < 1.0e-6f
+                     && analysisLockFallback < 1.0e-6f;
+    if (! passed)
+    {
+        std::cerr << "FAIL: monitor routing leaked audio"
+                  << " breathOff=" << breathOff << " breathOn=" << breathOn
+                  << " noizeOff=" << noizeOff << " noizeOn=" << noizeOn
+                  << " allOff=" << allOff
+                  << " recordingLock=" << recordingLockFallback
+                  << " analysisLock=" << analysisLockFallback << "\n";
+    }
+    return passed;
 }
 } // namespace
 
@@ -134,6 +281,20 @@ int main()
         return 1;
     }
 
-    std::cout << "PASS: Norm, Target, Global Gain, Global EQ, and selected Breath Gain/EQ survived editor recreation\n";
+    if (! runMonitorRoutingProbe(processor))
+        return 1;
+
+    QQDeBreathAudioProcessor secondProcessor;
+    setParameter(processor.parameters, QQDeBreath::ParamIDs::monitorBreath, 0.0f);
+    setParameter(secondProcessor.parameters, QQDeBreath::ParamIDs::monitorBreath, 1.0f);
+    const auto firstInstanceBreath = processor.parameters.getRawParameterValue(QQDeBreath::ParamIDs::monitorBreath)->load();
+    const auto secondInstanceBreath = secondProcessor.parameters.getRawParameterValue(QQDeBreath::ParamIDs::monitorBreath)->load();
+    if (firstInstanceBreath >= 0.5f || secondInstanceBreath < 0.5f)
+    {
+        std::cerr << "FAIL: separate plugin instances shared Monitor Breath state\n";
+        return 1;
+    }
+
+    std::cout << "PASS: editor state, Breath/Noize monitor routing, lock fallback, and plugin-instance parameter isolation\n";
     return 0;
 }

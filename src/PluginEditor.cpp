@@ -395,7 +395,7 @@ QQDeBreathAudioProcessorEditor::QQDeBreathAudioProcessorEditor(QQDeBreathAudioPr
     addAndMakeVisible(titleLabel);
     titleLabel.setVisible(false);
 
-    phaseLabel.setText("QQDeBreath ARA 1.15 Native + Global/Selected Breath EQ", juce::dontSendNotification);
+    phaseLabel.setText("QQDeBreath ARA 1.16 Native + Global/Selected Breath EQ", juce::dontSendNotification);
     phaseLabel.setJustificationType(juce::Justification::centred);
     phaseLabel.setColour(juce::Label::textColourId, juce::Colour(0xffcbd5e1));
     phaseLabel.setFont(juce::Font(18.0f, juce::Font::plain));
@@ -1570,7 +1570,7 @@ void QQDeBreathAudioProcessorEditor::persistAraState()
     if (auto* documentController = getAraDocumentController())
     {
         const auto peaks = waveformEditor.buildRegionPeakCache(result.regions);
-        documentController->upsertPersistentState(araSourceInfo, result, peaks);
+        documentController->upsertPersistentState(araSourceInfo, result, buildAraPlaybackParams(), peaks);
     }
 
     if (araSourceInfo.isComposite)
@@ -1645,7 +1645,7 @@ void QQDeBreathAudioProcessorEditor::persistAraMappedSourceStates(const QQDeBrea
         sourceInfo.numSamples = mapping.sourceNumSamples;
         sourceInfo.durationSeconds = mappedResult.durationSeconds;
         sourceInfo.exportStatus = "Mapped from selected ARA events.";
-        documentController->upsertPersistentState(sourceInfo, mappedResult,
+        documentController->upsertPersistentState(sourceInfo, mappedResult, buildAraPlaybackParams(),
                                                   waveformEditor.buildRegionPeakCache(compositePeakRegions));
     }
 }
@@ -1661,7 +1661,7 @@ void QQDeBreathAudioProcessorEditor::updateAraRuntimeState()
         return;
 
     const auto peaks = waveformEditor.buildRegionPeakCache(result.regions);
-    documentController->updateRuntimePersistentState(araSourceInfo, result, peaks);
+    documentController->updateRuntimePersistentState(araSourceInfo, result, buildAraPlaybackParams(), peaks);
 
     if (araSourceInfo.isComposite)
         updateAraRuntimeMappedSourceStates(result);
@@ -1735,7 +1735,7 @@ void QQDeBreathAudioProcessorEditor::updateAraRuntimeMappedSourceStates(const QQ
         sourceInfo.numSamples = mapping.sourceNumSamples;
         sourceInfo.durationSeconds = mappedResult.durationSeconds;
         sourceInfo.exportStatus = "Mapped from selected ARA events.";
-        documentController->updateRuntimePersistentState(sourceInfo, mappedResult,
+        documentController->updateRuntimePersistentState(sourceInfo, mappedResult, buildAraPlaybackParams(),
                                                          waveformEditor.buildRegionPeakCache(compositePeakRegions));
     }
 }
@@ -1765,9 +1765,6 @@ void QQDeBreathAudioProcessorEditor::restoreAraStateIfNeeded()
 
     if (source != nullptr)
         haveState = documentController->getPersistentStateForSource(buildAraSourceFingerprint(*source), restoredState);
-
-    if (! haveState)
-        haveState = documentController->getFirstPersistentState(restoredState);
 
     if (! haveState || restoredState.sourceInfo.sourceFingerprint.isEmpty())
         return;
@@ -1843,7 +1840,7 @@ void QQDeBreathAudioProcessorEditor::restoreAraStateIfNeeded()
     waveformEditor.setAnalysisResult(restoredAnalysis);
     selectedRegionIndex = -1;
 
-    const auto restoredParams = documentController->getPlaybackParams();
+    const auto restoredParams = restoredState.playbackParams;
     monitorVoiceButton.setToggleState(restoredParams.monitorVoice, juce::sendNotificationSync);
     monitorBreathButton.setToggleState(restoredParams.monitorBreath, juce::sendNotificationSync);
     monitorNoizeButton.setToggleState(restoredParams.monitorNoize, juce::sendNotificationSync);
@@ -1860,12 +1857,8 @@ void QQDeBreathAudioProcessorEditor::restoreAraStateIfNeeded()
     refreshBreathEqSpectrum();
 }
 
-void QQDeBreathAudioProcessorEditor::syncAraPlaybackParams()
+QQDeBreathARAPlaybackParams QQDeBreathAudioProcessorEditor::buildAraPlaybackParams() const
 {
-    auto* documentController = getAraDocumentController();
-    if (documentController == nullptr)
-        return;
-
     QQDeBreathARAPlaybackParams params;
     params.monitorVoice = monitorVoiceButton.getToggleState();
     params.monitorBreath = monitorBreathButton.getToggleState();
@@ -1879,6 +1872,36 @@ void QQDeBreathAudioProcessorEditor::syncAraPlaybackParams()
     params.breathGainDb = juce::jlimit(-60.0, 30.0, breathGainSlider.getValue());
     params.waveformDisplayGain = waveformSizeSlider.getValue();
     params.breathEqState = audioProcessor.getBreathEqState();
+    return params;
+}
+
+void QQDeBreathAudioProcessorEditor::syncAraPlaybackParams()
+{
+    auto* documentController = getAraDocumentController();
+    if (documentController == nullptr)
+        return;
+
+    const auto params = buildAraPlaybackParams();
+    if (isAraContext() && araSourceInfo.sourceFingerprint.isNotEmpty())
+    {
+        documentController->setPlaybackParamsForSource(araSourceInfo, params);
+        for (const auto& mapping : araSourceInfo.playbackMappings)
+        {
+            QQDeBreathARASourceInfo mappedInfo;
+            mappedInfo.name = mapping.sourceName;
+            mappedInfo.persistentId = mapping.persistentId;
+            mappedInfo.sourceFingerprint = mapping.sourceFingerprint;
+            mappedInfo.sampleRate = mapping.sourceSampleRate;
+            mappedInfo.channelCount = mapping.sourceChannelCount;
+            mappedInfo.numSamples = mapping.sourceNumSamples;
+            mappedInfo.durationSeconds = mapping.sourceSampleRate > 0.0
+                                       ? static_cast<double>(mapping.sourceNumSamples) / mapping.sourceSampleRate
+                                       : 0.0;
+            documentController->setPlaybackParamsForSource(mappedInfo, params);
+        }
+        return;
+    }
+
     documentController->setPlaybackParams(params);
 }
 
@@ -2667,10 +2690,10 @@ void QQDeBreathAudioProcessorEditor::setBreathEqLoopEnabled(bool enabled)
                            : localStart;
         if (! araSourceInfo.isComposite)
         {
-            const auto selectedRegions = editorView->getViewSelection().getEffectivePlaybackRegions<juce::ARAPlaybackRegion>();
-            if (! selectedRegions.empty() && selectedRegions.front() != nullptr)
+            const auto selectedRegions = findSelectedAraPlaybackRegions();
+            if (! selectedRegions.isEmpty() && selectedRegions.getFirst() != nullptr)
             {
-                auto* playbackRegion = selectedRegions.front();
+                auto* playbackRegion = selectedRegions.getFirst();
                 playbackStart = playbackRegion->getStartInPlaybackTime()
                               + juce::jmax(0.0, localStart - playbackRegion->getStartInAudioModificationTime());
             }
@@ -2827,41 +2850,44 @@ void QQDeBreathAudioProcessorEditor::reloadAraSource()
 
 juce::ARAAudioSource* QQDeBreathAudioProcessorEditor::findCurrentAudioSource() const
 {
-    auto* editorView = getARAEditorView();
-    if (editorView == nullptr)
-        return nullptr;
-
-    const auto selectedRegions = editorView->getViewSelection().getEffectivePlaybackRegions<juce::ARAPlaybackRegion>();
-    if (! selectedRegions.empty() && selectedRegions.front() != nullptr)
-    {
-        if (auto* modification = selectedRegions.front()->getAudioModification())
+    const auto instanceRegions = findSelectedAraPlaybackRegions();
+    if (! instanceRegions.isEmpty() && instanceRegions.getFirst() != nullptr)
+        if (auto* modification = instanceRegions.getFirst()->getAudioModification())
             return modification->getAudioSource();
-    }
 
-    auto* documentController = editorView->getDocumentController();
-    if (documentController == nullptr)
-        return nullptr;
-
-    auto* document = documentController->getDocument<juce::ARADocument>();
+    auto* editorView = getARAEditorView();
+    auto* documentController = editorView != nullptr ? editorView->getDocumentController() : nullptr;
+    auto* document = documentController != nullptr
+                   ? documentController->getDocument<juce::ARADocument>()
+                   : nullptr;
     if (document == nullptr)
         return nullptr;
 
     const auto& sources = document->getAudioSources<juce::ARAAudioSource>();
-    return sources.empty() ? nullptr : sources.front();
+    return sources.size() == 1 ? sources.front() : nullptr;
 }
 
 juce::Array<juce::ARAPlaybackRegion*> QQDeBreathAudioProcessorEditor::findSelectedAraPlaybackRegions() const
 {
     juce::Array<juce::ARAPlaybackRegion*> out;
+    const auto assignedRegions = audioProcessor.getAssignedAraPlaybackRegions();
 
-    auto* editorView = getARAEditorView();
-    if (editorView == nullptr)
-        return out;
+    if (auto* editorView = getARAEditorView())
+    {
+        const auto selectedRegions = editorView->getViewSelection().getEffectivePlaybackRegions<juce::ARAPlaybackRegion>();
+        for (auto* region : selectedRegions)
+        {
+            if (region != nullptr && (assignedRegions.isEmpty() || assignedRegions.contains(region)))
+                out.addIfNotAlreadyThere(region);
+        }
+    }
 
-    const auto selectedRegions = editorView->getViewSelection().getEffectivePlaybackRegions<juce::ARAPlaybackRegion>();
-    for (auto* region : selectedRegions)
-        if (region != nullptr)
-            out.addIfNotAlreadyThere(region);
+    // ARA selection is document-wide. When another track is selected, this editor must stay
+    // bound to the playback regions assigned to its own plugin instance.
+    if (out.isEmpty())
+        for (auto* region : assignedRegions)
+            if (region != nullptr)
+                out.addIfNotAlreadyThere(region);
 
     for (auto i = 0; i < out.size(); ++i)
         for (auto j = i + 1; j < out.size(); ++j)
@@ -3169,10 +3195,10 @@ double QQDeBreathAudioProcessorEditor::getAraLocalPlayheadSeconds(double hostTim
 
     if (auto* editorView = getARAEditorView())
     {
-        const auto selectedRegions = editorView->getViewSelection().getEffectivePlaybackRegions<juce::ARAPlaybackRegion>();
-        if (! selectedRegions.empty() && selectedRegions.front() != nullptr)
+        const auto selectedRegions = findSelectedAraPlaybackRegions();
+        if (! selectedRegions.isEmpty() && selectedRegions.getFirst() != nullptr)
         {
-            auto* playbackRegion = selectedRegions.front();
+            auto* playbackRegion = selectedRegions.getFirst();
             const auto playbackRange = playbackRegion->getTimeRange();
             localTime = hostTimeSeconds - playbackRange.getStart() + playbackRegion->getStartInAudioModificationTime();
         }
@@ -3633,10 +3659,10 @@ void QQDeBreathAudioProcessorEditor::waveformSeekRequested(double localSeconds)
         }
         else
         {
-        const auto selectedRegions = editorView->getViewSelection().getEffectivePlaybackRegions<juce::ARAPlaybackRegion>();
-        if (! selectedRegions.empty() && selectedRegions.front() != nullptr)
+        const auto selectedRegions = findSelectedAraPlaybackRegions();
+        if (! selectedRegions.isEmpty() && selectedRegions.getFirst() != nullptr)
         {
-            auto* playbackRegion = selectedRegions.front();
+            auto* playbackRegion = selectedRegions.getFirst();
             targetTime = playbackRegion->getStartInPlaybackTime()
                        + juce::jmax(0.0, localSeconds - playbackRegion->getStartInAudioModificationTime());
         }

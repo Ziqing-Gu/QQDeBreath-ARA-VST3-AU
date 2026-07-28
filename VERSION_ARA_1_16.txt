@@ -1,0 +1,9 @@
+QQDeBreath ARA/VST3/AU 1.16
+Date: 2026-07-28
+
+- Fixed intermittent dry-audio leakage when Voice/Breath/Noize monitoring was disabled during VST3 preview cache contention.
+- Confirmed the same fallback affected both Breath and Noize; all three monitor components now remain isolated.
+- Bound ARA source selection to the playback regions assigned to each plug-in instance.
+- Stored ARA regions and playback parameters per source so multiple Vocal tracks keep independent content and edits.
+- Added monitor-routing, lock-contention, editor-state, and plain-instance isolation regression coverage.
+- Detector model, region boundaries, processing order, and export algorithm are unchanged.
