@@ -1,5 +1,5 @@
-QQDeBreath 1.16 - macOS VST3 / AU 安装与使用说明
-================================================
+QQDeBreath 1.16 - Windows / macOS VST3 / AU 安装与使用说明
+==========================================================
 
 一、选择安装包
 --------------
@@ -13,17 +13,33 @@ QQDeBreath 1.16 - macOS VST3 / AU 安装与使用说明
 3. QQDeBreath-macOS-AU-Universal-1.16.zip
    Logic Pro 使用的 Universal 2 Audio Unit，同时包含 arm64 与 x86_64，可用于 Apple Silicon 和 Intel Mac。
 
+4. QQDeBreath-Windows-x64-1.16.zip
+   64 位 Windows 宿主使用的 VST3。
+
 二、系统要求
 ------------
 
 - macOS 11 或更高版本。
 - 支持 64 位 VST3 或 AU 的宿主软件。
 - 当前免费版本采用 Apple 临时签名，没有 Developer ID 签名和 Apple 公证，因此首次安装时可能需要手动放行。
+- Windows 版需要 Windows 10 或 Windows 11 x64。
+- Windows 版需要支持 64 位 VST3 的宿主软件。
 
 三、安装位置
 ------------
 
-VST3：将 QQDeBreath.vst3 复制到：
+Windows VST3：
+1. 完全退出 DAW。
+2. 解压 QQDeBreath-Windows-x64-1.16.zip。
+3. 将完整的 QQDeBreath.vst3 文件夹复制到：
+     C:\Program Files\Common Files\VST3\
+4. 如果该目录已经有旧版 QQDeBreath.vst3，请使用新版完整覆盖。
+5. 重新打开 DAW，在插件管理器中重新扫描或重新激活 QQDeBreath。
+
+如果 Windows 将下载的 ZIP 标记为已阻止，请右键 ZIP，打开“属性”，
+勾选“解除锁定”，点击“应用”，然后重新解压。
+
+macOS VST3：将 QQDeBreath.vst3 复制到：
   /Library/Audio/Plug-Ins/VST3/
 
 AU：将 QQDeBreath.component 复制到：
