@@ -6,7 +6,7 @@ Plan D must include all Plan A, Plan B, and Plan C deliverables, plus:
 2. Build and verify macOS Apple Silicon VST3.
 3. Build and verify macOS Intel x86_64 VST3.
 4. Build and verify macOS Universal 2 AU/ARA.
-5. Place all platform archives on the desktop.
+5. Create one desktop release folder with `Win` and `Mac` subfolders. Put the Windows VST3 archive in `Win`, put the Apple Silicon VST3, Intel VST3, and Universal 2 AU archives in `Mac`, and keep the Chinese/English installation guides at the release-folder root.
 6. Include Chinese and English installation guides covering both Windows and macOS installation.
 7. Verify architectures and SHA-256 checksums internally, but do not place architecture proof text files or `SHA256SUMS.txt` in the desktop end-user package.
 8. Update the bilingual GitHub README with the current version and release changes.
