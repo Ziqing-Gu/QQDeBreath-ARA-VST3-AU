@@ -1,6 +1,20 @@
 # QQDeBreath ARA / VST3 / AU
 
-当前插件版本 / Current plugin version: **1.16**
+当前插件版本 / Current plugin version: **1.17**
+
+## 1.17 更新 / What's new in 1.17
+
+### 中文
+
+- **移除插件内部缩放手柄：** 主界面右下角不再显示 JUCE 内部绘制的缩放角标。
+- **保留宿主窗口缩放：** 插件仍保持可缩放状态与原有尺寸限制，宿主提供的窗口缩放和最大化能力不受影响。
+- **声音与状态逻辑不变：** 未修改分析模型、regions、监听、Fade、Norm、Gain、EQ、ARA 状态或三轨导出。
+
+### English
+
+- **Internal resize grip removed:** The JUCE-drawn resize handle is no longer shown in the lower-right corner of the editor.
+- **Host resizing preserved:** The editor remains resizable with the existing size limits, so host-provided resizing and maximization are unchanged.
+- **Audio and state behavior unchanged:** No analyzer, region, monitor, Fade, Norm, Gain, EQ, ARA-state, or stem-export logic was changed.
 
 ## 1.16 更新 / What's new in 1.16
 
@@ -287,5 +301,5 @@ GitHub Actions publishes separate Apple Silicon VST3, Intel VST3, Universal 2 AU
 
 详细安装步骤见 / See the detailed installation guides:
 
-- `docs/QQDeBreath-macOS-1.16-INSTALL-ZH-CN.txt`
-- `docs/QQDeBreath-macOS-1.16-INSTALL.txt`
+- `docs/QQDeBreath 1.17 Windows与macOS安装使用说明（中文）.txt`
+- `docs/QQDeBreath-1.17-Windows-macOS-INSTALL.txt`

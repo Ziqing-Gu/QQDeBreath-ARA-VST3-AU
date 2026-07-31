@@ -1,0 +1,6 @@
+QQDeBreath ARA/VST3/AU 1.17
+Date: 2026-07-31
+
+- Removed the JUCE-drawn lower-right editor resize grip.
+- Kept the editor resizable through host-provided window controls and preserved the existing size limits.
+- Analyzer, regions, monitoring, Fade, Norm, Gain, EQ, ARA state, and stem export are unchanged.
