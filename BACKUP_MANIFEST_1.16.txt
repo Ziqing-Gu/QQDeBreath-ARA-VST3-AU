@@ -1,0 +1,32 @@
+QQDeBreathTool ARA / VST3 / AU 1.16 backup manifest
+===================================================
+Date: 2026-07-28
+Version: 1.16
+Source workspace: C:\Users\86189\Documents\Codex\2026-06-30\qqdebreathtool\plugin
+Backup path: D:\备份文件\Vibe Coding\去呼吸\源代码\QQDeBreathTool ARA VST3 AU 1.16
+GitHub repository: https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU
+Git commit: e7a7ce6b60cbb860ba54f469cb42c648264dda39
+Documentation correction commit: 895f241cb319d11d7a3d0eab5a73106e7563162b
+GitHub Actions run: https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/actions/runs/30367050937
+
+Verification
+------------
+- Windows local VST3 build/install: PASS
+- Editor/monitor/source-isolation regression probe: PASS, 25/25 repeated runs
+- GitHub Actions Windows x64 VST3: PASS
+- GitHub Actions macOS Apple Silicon arm64 VST3: PASS
+- GitHub Actions macOS Intel x86_64 VST3: PASS
+- GitHub Actions macOS Universal 2 AU/ARA: PASS
+- Installed Windows module SHA-256: 4C2EC80102ADBE8252D2B5697CC1EE1963AFC559AA442CF615D4CEF41D972D28
+- Source backup files: 1361
+- Source backup bytes before this manifest: 92463034
+
+Release scope
+-------------
+- Prevent full-dry leakage when VST3 preview caches are briefly busy and monitor components are disabled.
+- Apply the same routing protection to Breath, Noize, and all-off combinations.
+- Bind ARA editors to playback regions owned by the current plug-in instance.
+- Persist regions and playback parameters independently per ARA source for multitrack Vocal projects.
+- Detector model, region boundaries, processing order, and three-stem export algorithm are unchanged.
+
+Artifact hashes are recorded in GITHUB_ACTIONS_ARTIFACTS_SHA256.txt.

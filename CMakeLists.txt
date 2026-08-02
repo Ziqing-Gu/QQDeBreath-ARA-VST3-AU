@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(QQDeBreath VERSION 1.0.17 LANGUAGES C CXX)
+project(QQDeBreath VERSION 1.0.19 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -49,7 +49,7 @@ if(APPLE)
 endif()
 
 juce_add_plugin(QQDeBreath
-    COMPANY_NAME "QQDeBreath"
+    COMPANY_NAME "Qing Audio"
     PRODUCT_NAME "QQDeBreath"
     BUNDLE_ID "com.qqdebreath.QQDeBreath"
     PLUGIN_MANUFACTURER_CODE Qqdb

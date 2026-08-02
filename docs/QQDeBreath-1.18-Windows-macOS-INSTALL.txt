@@ -1,0 +1,90 @@
+QQDeBreath 1.18 - Windows / macOS VST3 / AU installation and usage guide
+==========================================================================
+
+PACKAGE CHOICE
+--------------
+
+1. QQDeBreath-macOS-Apple-Silicon-1.18.zip
+   VST3 for Apple Silicon Macs (M1/M2/M3/M4 and later).
+
+2. QQDeBreath-macOS-Intel-1.18.zip
+   VST3 for Intel Macs.
+
+3. QQDeBreath-macOS-AU-Universal-1.18.zip
+   Universal 2 Audio Unit for Logic Pro. It contains arm64 and x86_64.
+
+4. QQDeBreath-Windows-x64-1.18.zip
+   VST3 for 64-bit Windows hosts.
+
+SYSTEM REQUIREMENTS
+-------------------
+
+- macOS 11 or later.
+- A compatible 64-bit DAW.
+- These free builds are ad-hoc signed, not Developer ID signed or notarized.
+- Windows 10 or Windows 11 x64 for the Windows VST3 build.
+- A 64-bit VST3-compatible Windows DAW.
+
+INSTALL LOCATIONS
+-----------------
+
+Windows VST3:
+1. Close the DAW.
+2. Extract QQDeBreath-Windows-x64-1.18.zip.
+3. Copy the complete QQDeBreath.vst3 folder to:
+     C:\Program Files\Common Files\VST3\
+4. Replace the old QQDeBreath.vst3 folder if one is already installed.
+5. Restart the DAW and rescan or reactivate QQDeBreath in the plug-in manager.
+
+If Windows marks the downloaded ZIP as blocked, right-click the ZIP, open
+Properties, select Unblock, click Apply, and then extract it again.
+
+macOS VST3:
+Copy QQDeBreath.vst3 to:
+  /Library/Audio/Plug-Ins/VST3/
+
+Copy QQDeBreath.component to:
+  /Library/Audio/Plug-Ins/Components/
+
+Restart the DAW and rescan plug-ins after installation or replacement.
+
+USAGE
+-----
+
+ARA in Cubase/Nuendo:
+1. Add QQDeBreath as an Audio Extension to the selected audio event.
+2. Open QQDeBreath and click Load.
+3. Click Analyze, edit Breath/Noise regions, monitor the required stems, and export when ready.
+
+Plain VST3 recording:
+1. Insert QQDeBreath on the vocal track.
+2. Click Record to arm it, then play the DAW timeline.
+3. Stop DAW playback to stop recording.
+4. Click Analyze and continue editing/monitoring.
+
+Logic Pro / AU / ARA 2:
+- Logic Pro does not load VST3. Install QQDeBreath.component.
+- Insert QQDeBreath in the first Audio Effect slot to use ARA mode.
+- On Apple Silicon, Apple currently requires Logic Pro to run with Rosetta for third-party ARA Audio Units. Quit Logic, open Applications, select Logic Pro, choose Get Info, enable Open using Rosetta, then reopen Logic.
+
+FIRST-LAUNCH SECURITY NOTICE
+----------------------------
+
+If macOS blocks QQDeBreath during the first scan:
+1. Trigger one plug-in scan in the DAW.
+2. Open System Settings > Privacy & Security.
+3. Find the QQDeBreath warning and click Open Anyway.
+4. Enter the Mac login password and confirm.
+5. Restart the DAW and rescan/reactivate QQDeBreath.
+
+Trusted-source fallback commands:
+
+  sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/VST3/QQDeBreath.vst3"
+  sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/Components/QQDeBreath.component"
+
+Only run these commands for archives downloaded from the official QQDeBreath GitHub repository.
+
+VERSION 1.18
+------------
+
+1.18 removes the JUCE-drawn resize grip from the lower-right corner of the editor while keeping host-provided window resizing and the existing size limits. The analyzer, region editing, monitoring, Fade, Norm, Gain, EQ, ARA project state, and three-stem export behavior are unchanged.

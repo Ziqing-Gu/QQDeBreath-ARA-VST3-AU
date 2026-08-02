@@ -1,8 +1,21 @@
 # QQDeBreath ARA / VST3 / AU
 
-当前插件版本 / Current plugin version: **1.17**
+当前插件版本 / Current plugin version: **1.19**
 
-## 1.17 更新 / What's new in 1.17
+## 1.19 更新 / What's new in 1.19
+
+### 中文
+
+- **修复 macOS ARA 首次打开的界面尺寸握手：** 针对部分 Fender Studio / Studio One macOS 环境，编辑器首次嵌入时只显示在左侧、需要拖动宿主窗口才恢复的问题，增加了有限次数的延迟宿主布局同步。
+- **兼容宿主晚到的尺寸和缩放信息：** ARA 编辑器在挂入宿主层级、首次显示以及宿主发送缩放因子后重新布局，不持续干扰用户正常调整窗口。
+- **音频和工程行为不变：** 没有修改分析模型、区域边界、监听、Fade、Norm、Gain、EQ、ARA 工程状态或三轨导出逻辑。
+
+### English
+
+- **Fixed the first-open macOS ARA layout handshake:** On some Fender Studio / Studio One macOS setups, the editor could appear only in the left part of the host panel until the host window was dragged. The editor now performs a bounded deferred host-layout synchronization.
+- **Handles late host bounds and scale information:** The ARA editor resynchronizes after hierarchy attachment, first visibility, and host scale-factor delivery without continuously fighting normal user resizing.
+- **Audio and project behavior unchanged:** The analyzer, region boundaries, monitoring, Fade, Norm, Gain, EQ, ARA project state, and three-stem export logic were not changed.
+## 1.18 更新 / What's new in 1.18
 
 ### 中文
 
@@ -301,5 +314,5 @@ GitHub Actions publishes separate Apple Silicon VST3, Intel VST3, Universal 2 AU
 
 详细安装步骤见 / See the detailed installation guides:
 
-- `docs/QQDeBreath 1.17 Windows与macOS安装使用说明（中文）.txt`
-- `docs/QQDeBreath-1.17-Windows-macOS-INSTALL.txt`
+- `docs/QQDeBreath 1.19 Windows与macOS安装使用说明（中文）.txt`
+- `docs/QQDeBreath-1.19-Windows-macOS-INSTALL.txt`

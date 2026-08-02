@@ -1,0 +1,30 @@
+QQDeBreath ARA/VST3 Plugin
+Version: ARA 1.04
+VST3 module version: 1.0.4
+Date: 2026-07-09
+
+Analysis backend:
+Native C++ analyzer. The normal Analyze path does not call QQDeBreathTool.exe.
+
+Embedded model:
+QQDeBreathTool 1.11 Breath model
+sha256: D655AF2BFB260866DE74319D179FDA0B007E6539711C572967BC0FC709E42AFE
+
+New in 1.04:
+Load ARA button renamed to Load.
+Main page EQ checkbox enables/disables Breath EQ.
+Breath EQ page shows dynamic Pre/Post spectrum.
+EQ page Loop previews the current/next Breath.
+HP/LP header toggles removed; click the EQ graph edges to create high-pass or low-pass cuts.
+
+Processing:
+Breath raw split -> optional Breath Norm -> Breath Adjust -> Breath EQ -> monitor / Breath.wav export.
+Voice and Noize are not EQ-processed.
+Detection and region boundaries are not changed by EQ.
+
+Known limitation:
+ARA waveform/analyze UI is still single-source based. Multi-event timeline display requires a composite ARA timeline layer.
+
+Verification:
+Build passed with plugin/build-ara-vst3.ps1.
+Installed VST3: C:\Program Files\Common Files\VST3\QQDeBreath.vst3

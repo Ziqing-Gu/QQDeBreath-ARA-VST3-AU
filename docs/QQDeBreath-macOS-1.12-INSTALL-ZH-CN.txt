@@ -1,0 +1,76 @@
+﻿QQDeBreath 1.12 - macOS VST3 / AU 安装说明
+================================================
+
+一、安装包选择
+--------------
+
+1. QQDeBreath-macOS-Apple-Silicon-1.12.zip
+   适用于 Apple Silicon Mac，包括 M1、M2、M3、M4 及后续处理器的 VST3 版本。
+
+2. QQDeBreath-macOS-Intel-1.12.zip
+   适用于 Intel 处理器 Mac 的 VST3 版本。
+
+3. QQDeBreath-macOS-AU-Universal-1.12.zip
+   适用于 Logic Pro 的 Universal 2 Audio Unit 版本。
+   此版本同时包含 arm64 和 x86_64，可在 Apple Silicon 与 Intel Mac 上使用。
+
+二、安装位置
+------------
+
+将 QQDeBreath.vst3 复制到：
+  /Library/Audio/Plug-Ins/VST3/
+
+将 QQDeBreath.component 复制到：
+  /Library/Audio/Plug-Ins/Components/
+
+如果对应文件夹不存在，可以手动创建。
+
+三、Logic Pro / ARA 2 使用方法
+-----------------------------
+
+Logic Pro 不支持 VST3，因此在 Logic Pro 中必须安装 QQDeBreath.component。
+
+需要使用 ARA 模式时，请将 QQDeBreath 插入音轨的第一个 Audio Effect 插槽。
+
+在 Apple Silicon Mac 上，Apple 目前要求第三方 ARA Audio Unit 在 Rosetta 模式下运行：
+
+1. 完全退出 Logic Pro。
+2. 打开“应用程序”文件夹。
+3. 选中 Logic Pro，按 Command + I，或右键选择“显示简介”。
+4. 勾选“使用 Rosetta 打开”。
+5. 重新打开 Logic Pro。
+
+四、首次运行时的 macOS 安全提示
+-------------------------------
+
+当前免费测试版本采用临时签名，没有 Apple Developer ID 签名和公证。
+macOS 首次扫描时可能提示无法验证开发者，或将插件加入黑名单。
+
+处理步骤：
+
+1. 在 DAW 中触发一次插件扫描，让系统产生拦截记录。
+2. 打开“系统设置” > “隐私与安全性”。
+3. 找到有关 QQDeBreath 被阻止的提示。
+4. 点击“仍要打开”。
+5. 输入 Mac 登录密码并确认。
+6. 完全退出并重新打开 DAW，然后重新扫描或重新激活 QQDeBreath。
+
+如果确认文件来自 QQDeBreath 官方 GitHub 仓库，也可以使用以下命令移除隔离属性：
+
+VST3：
+  sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/VST3/QQDeBreath.vst3"
+
+AU：
+  sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/Components/QQDeBreath.component"
+
+请只对从 QQDeBreath 官方 GitHub 仓库下载的文件执行上述命令。
+
+五、宿主格式说明
+----------------
+
+Cubase / Nuendo / REAPER / Studio One：使用 VST3。
+Logic Pro：使用 AU，也就是 QQDeBreath.component。
+
+AU Universal 2 版本同时支持：
+  arm64：Apple Silicon，适用于 M1、M2、M3、M4 等处理器。
+  x86_64：Intel Mac。

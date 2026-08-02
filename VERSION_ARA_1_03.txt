@@ -1,0 +1,31 @@
+QQDeBreath ARA/VST3 Plugin
+Version: ARA 1.03
+VST3 module version: 1.0.3
+Date: 2026-07-08
+
+Analysis backend:
+Native C++ analyzer. The normal Analyze path does not call QQDeBreathTool.exe.
+
+Embedded model:
+QQDeBreathTool 1.11 Breath model
+sha256: D655AF2BFB260866DE74319D179FDA0B007E6539711C572967BC0FC709E42AFE
+
+New in 1.03:
+Global Breath EQ prototype.
+Main page has a Breath EQ button.
+Breath EQ opens a dedicated EQ page.
+The top-right X returns to the main waveform page.
+EQ supports HP, LP, up to six Bell bands, spectrum display, drag editing, wheel Q adjustment, and right-click band removal.
+
+Processing:
+Breath raw split -> optional Breath Norm -> Breath Adjust -> Breath EQ -> monitor / Breath.wav export.
+Voice and Noize are not EQ-processed.
+Detection and region boundaries are not changed by EQ.
+
+Verification:
+Build passed with plugin/build-ara-vst3.ps1.
+Installed VST3: C:\Program Files\Common Files\VST3\QQDeBreath.vst3
+
+Notes:
+Noize remains a formal editable region type.
+Voice / Breath / Noize monitor checkboxes remain the core monitor workflow.

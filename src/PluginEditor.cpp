@@ -395,7 +395,7 @@ QQDeBreathAudioProcessorEditor::QQDeBreathAudioProcessorEditor(QQDeBreathAudioPr
     addAndMakeVisible(titleLabel);
     titleLabel.setVisible(false);
 
-    phaseLabel.setText("QQDeBreath ARA 1.17 Native + Global/Selected Breath EQ", juce::dontSendNotification);
+    phaseLabel.setText("QQDeBreath ARA 1.19 Native + Global/Selected Breath EQ", juce::dontSendNotification);
     phaseLabel.setJustificationType(juce::Justification::centred);
     phaseLabel.setColour(juce::Label::textColourId, juce::Colour(0xffcbd5e1));
     phaseLabel.setFont(juce::Font(18.0f, juce::Font::plain));
@@ -808,9 +808,10 @@ QQDeBreathAudioProcessorEditor::QQDeBreathAudioProcessorEditor(QQDeBreathAudioPr
     updateRecordingInfo();
     startTimerHz(30);
 
+    // Establish the default size before the host negotiates the embedded ARA view.
+    setSize(1180, 720);
     setResizable(true, false);
     setResizeLimits(960, 560, 8192, 8192);
-    setSize(1180, 720);
 }
 
 QQDeBreathAudioProcessorEditor::~QQDeBreathAudioProcessorEditor()
@@ -1051,8 +1052,83 @@ void QQDeBreathAudioProcessorEditor::setAutoApplyEnabled(bool enabled, bool appl
         applyBreathDetailPreviewToWaveform();
 }
 
+void QQDeBreathAudioProcessorEditor::parentHierarchyChanged()
+{
+    juce::AudioProcessorEditor::parentHierarchyChanged();
+    scheduleInitialHostLayoutSync();
+}
+
+void QQDeBreathAudioProcessorEditor::visibilityChanged()
+{
+    juce::AudioProcessorEditor::visibilityChanged();
+
+    if (isShowing())
+        scheduleInitialHostLayoutSync();
+}
+
+void QQDeBreathAudioProcessorEditor::setScaleFactor(float newScaleFactor)
+{
+    juce::AudioProcessorEditor::setScaleFactor(newScaleFactor);
+    resized();
+    repaint();
+    scheduleInitialHostLayoutSync();
+}
+
+void QQDeBreathAudioProcessorEditor::scheduleInitialHostLayoutSync()
+{
+    if (! isAraContext())
+        return;
+
+    initialHostLayoutSyncPending = true;
+    initialHostLayoutSyncAttempts = 0;
+}
+
+void QQDeBreathAudioProcessorEditor::performInitialHostLayoutSync()
+{
+    if (! initialHostLayoutSyncPending)
+        return;
+
+    if (! isAraContext())
+    {
+        initialHostLayoutSyncPending = false;
+        return;
+    }
+
+    // Some ARA hosts attach the native view first and send its final bounds a
+    // few message-loop turns later. Give that handshake a bounded opportunity
+    // to complete without continuously fighting the host during normal resize.
+    if (getPeer() == nullptr || getWidth() <= 0 || getHeight() <= 0)
+        return;
+
+    ++initialHostLayoutSyncAttempts;
+    if (initialHostLayoutSyncAttempts == 1)
+    {
+        setResizable(true, false);
+        setResizeLimits(960, 560, 8192, 8192);
+    }
+
+    // A one-pixel nudge is enough to make hosts that defer their first editor
+    // resize send the real embedded bounds. It is attempted only twice.
+    if (initialHostLayoutSyncAttempts == 1 || initialHostLayoutSyncAttempts == 4)
+    {
+        const auto width = getWidth();
+        const auto height = getHeight();
+        setSize(width + 1, height);
+        setSize(width, height);
+    }
+
+    resized();
+    repaint();
+
+    if (initialHostLayoutSyncAttempts >= 8)
+        initialHostLayoutSyncPending = false;
+}
+
 void QQDeBreathAudioProcessorEditor::timerCallback()
 {
+    if (initialHostLayoutSyncPending)
+        performInitialHostLayoutSync();
+
     updateRecordingInfo();
 
     if (pendingBreathDetailPersist)
@@ -1349,6 +1425,9 @@ void QQDeBreathAudioProcessorEditor::updateContextUi()
         araUiMode = araContext;
         setResizable(true, false);
         resized();
+
+        if (araContext)
+            scheduleInitialHostLayoutSync();
     }
 
     waveformSizeLabel.setVisible(! araContext);

@@ -1,0 +1,23 @@
+QQDeBreath ARA/VST3 Plugin
+Version: ARA 1.02
+VST3 module version: 1.0.2
+Date: 2026-07-08
+
+Analysis backend:
+Native C++ analyzer. The normal Analyze path does not call QQDeBreathTool.exe.
+
+Embedded model:
+QQDeBreathTool 1.11 Breath model
+sha256: D655AF2BFB260866DE74319D179FDA0B007E6539711C572967BC0FC709E42AFE
+
+Verification:
+Build passed with plugin/build-ara-vst3.ps1.
+Installed VST3: C:\Program Files\Common Files\VST3\QQDeBreath.vst3
+
+Python 1.11 vs C++ 1.02 comparison:
+2024/Vocal.wav: 29/29 regions matched, avg IoU 0.999246.
+水母银河/水母银河 - Vocal.wav: 42/42 regions matched, avg IoU 0.998875.
+
+Notes:
+Noize remains a formal editable region type.
+Voice / Breath / Noize monitor checkboxes remain the core monitor workflow.

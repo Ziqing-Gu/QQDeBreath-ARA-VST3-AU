@@ -1,0 +1,103 @@
+QQDeBreath 1.19 - Windows / macOS VST3 / AU 安装与使用说明
+==========================================================
+
+一、选择安装包
+--------------
+
+1. QQDeBreath-macOS-Apple-Silicon-1.19.zip
+   Apple Silicon Mac 使用的 VST3，支持 M1、M2、M3、M4 及后续处理器。
+
+2. QQDeBreath-macOS-Intel-1.19.zip
+   Intel 处理器 Mac 使用的 VST3。
+
+3. QQDeBreath-macOS-AU-Universal-1.19.zip
+   Logic Pro 使用的 Universal 2 Audio Unit，同时包含 arm64 与 x86_64，可用于 Apple Silicon 和 Intel Mac。
+
+4. QQDeBreath-Windows-x64-1.19.zip
+   64 位 Windows 宿主使用的 VST3。
+
+二、系统要求
+------------
+
+- macOS 11 或更高版本。
+- 支持 64 位 VST3 或 AU 的宿主软件。
+- 当前免费版本采用 Apple 临时签名，没有 Developer ID 签名和 Apple 公证，因此首次安装时可能需要手动放行。
+- Windows 版需要 Windows 10 或 Windows 11 x64。
+- Windows 版需要支持 64 位 VST3 的宿主软件。
+
+三、安装位置
+------------
+
+Windows VST3：
+1. 完全退出 DAW。
+2. 解压 QQDeBreath-Windows-x64-1.19.zip。
+3. 将完整的 QQDeBreath.vst3 文件夹复制到：
+     C:\Program Files\Common Files\VST3\
+4. 如果该目录已经有旧版 QQDeBreath.vst3，请使用新版完整覆盖。
+5. 重新打开 DAW，在插件管理器中重新扫描或重新激活 QQDeBreath。
+
+如果 Windows 将下载的 ZIP 标记为已阻止，请右键 ZIP，打开“属性”，
+勾选“解除锁定”，点击“应用”，然后重新解压。
+
+macOS VST3：将 QQDeBreath.vst3 复制到：
+  /Library/Audio/Plug-Ins/VST3/
+
+AU：将 QQDeBreath.component 复制到：
+  /Library/Audio/Plug-Ins/Components/
+
+覆盖旧版本后，请完全退出并重新打开宿主，然后重新扫描或重新激活插件。
+
+四、ARA 使用方法（Cubase / Nuendo）
+----------------------------------
+
+1. 选中需要处理的 Audio Event。
+2. 将 QQDeBreath 作为 Audio Extension 加载到该 Event。
+3. 打开 QQDeBreath，点击 Load 读取当前 ARA 音频。
+4. 点击 Analyze 自动识别 Breath。
+5. 在波形上检查和编辑 Breath / Noise 区域。
+6. 使用 Voice / Breath / Noise 勾选框组合监听。
+7. 根据需要调整 Fade、Breath Norm、Global Gain、全局 EQ 和局部 EQ。
+8. 完成后使用 Export Stems 导出处理结果。
+
+五、普通 VST3 录音模式
+----------------------
+
+1. 把 QQDeBreath 作为普通 VST3 插入人声轨道。
+2. 点击 Record，此时插件进入等待录音状态。
+3. 在 DAW 中开始播放，插件才会真正录制输入音频。
+4. 停止 DAW 播放后，插件自动结束本次录制。
+5. 点击 Analyze，然后进行区域编辑、监听和导出。
+
+六、Logic Pro / AU / ARA 2
+--------------------------
+
+- Logic Pro 不支持 VST3，请安装 QQDeBreath.component。
+- 使用 ARA 时，应将 QQDeBreath 放在音轨的第一个 Audio Effect 插槽。
+- Apple Silicon Mac 上，Apple 目前要求第三方 ARA Audio Unit 在 Rosetta 模式下运行：完全退出 Logic Pro，在“应用程序”中选中 Logic Pro，按 Command + I 打开简介，勾选“使用 Rosetta 打开”，然后重新启动 Logic Pro。
+
+七、macOS 首次运行安全提示
+--------------------------
+
+如果首次扫描时提示“Apple 无法验证”或插件被加入黑名单：
+
+1. 先在宿主中触发一次插件扫描。
+2. 打开“系统设置”>“隐私与安全性”。
+3. 找到 QQDeBreath 被阻止的提示。
+4. 点击“仍要打开”。
+5. 输入 Mac 登录密码并确认。
+6. 完全退出并重新打开宿主，然后重新扫描或重新激活插件。
+
+如果确认文件来自 QQDeBreath 官方 GitHub 仓库，也可以在“终端”中执行：
+
+VST3：
+  sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/VST3/QQDeBreath.vst3"
+
+AU：
+  sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/Components/QQDeBreath.component"
+
+请不要对来源不明的插件执行上述命令。
+
+八、1.19 版本变化
+-----------------
+
+1.19 修复了部分 macOS Fender Studio / Studio One 环境中 ARA 编辑器首次打开时只显示左半区域、拖动宿主窗口后才恢复的问题。编辑器现在会在 ARA 视图挂入宿主、首次显示和缩放信息到达后执行有限次数的尺寸同步。分析模型、region 编辑、监听、Fade、Norm、Gain、EQ、ARA 工程状态和三轨导出行为均未改变。

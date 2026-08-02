@@ -1,0 +1,11 @@
+QQDeBreath ARA/VST3 1.05
+Date: 2026-07-09
+
+Status:
+- Native C++ analyzer follows QQDeBreathTool 1.11 model data.
+- Unified VST3/ARA bundle.
+- Multi-event ARA Load prototype enabled for same-sample-rate selected events.
+- Global Breath EQ and per-Breath Adjust/EQ enabled.
+
+Notes:
+- ARA/VST3 source backup should be stored separately from the standalone app source.

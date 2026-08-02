@@ -1,0 +1,19 @@
+QQDeBreath ARA/VST3 plugin version: ARA 1.01
+Date: 2026-07-08
+
+This is the ARA/VST3 plugin prototype version, not the standalone/exe app
+version.
+
+Analysis backend:
+QQDeBreathTool.exe analyze-for-plugin
+
+Expected app bridge version:
+QQDeBreathTool 1.11
+
+Expected model sha256:
+D655AF2BFB260866DE74319D179FDA0B007E6539711C572967BC0FC709E42AFE
+
+Notes:
+- ARA and plain VST3 modes share the bridge analysis logic.
+- No C++ algorithm port is included in this version.
+- The plugin still depends on a compatible QQDeBreathTool.exe.
