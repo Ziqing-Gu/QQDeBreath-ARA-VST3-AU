@@ -1,0 +1,7 @@
+QQDeBreath ARA/VST3/AU 1.20
+Date: 2026-08-03
+
+- Fixed ARA playback crackle after reopening a DAW project.
+- Project-restored ARA sources are preloaded by a Document Controller worker thread.
+- The realtime renderer never performs host ARA sample reads when the immutable cache is unavailable.
+- Analyzer, region, monitor, Fade, Norm, Gain, EQ, project-state, and stem-export behavior unchanged.

@@ -1,7 +1,20 @@
 # QQDeBreath ARA / VST3 / AU
 
-当前插件版本 / Current plugin version: **1.19**
+当前插件版本 / Current plugin version: **1.20**
 
+## 1.20 更新 / What's new in 1.20
+
+### 中文
+
+- **修复 ARA 工程重开后的噼啪声：** 工程状态恢复后，ARA 音频源现在由 Document Controller 自动在后台预载到不可变内存缓存，不再要求用户重新打开 ARA 编辑器。
+- **禁止实时线程读取宿主音频源：** 播放回调不再在缓存缺失时逐块调用 ARA sample-access API；缓存准备完成前保持安全静音，准备完成后自动恢复播放。
+- **其他行为保持不变：** 分析模型、区域边界、监听、Fade、Norm、Gain、EQ、工程状态和三轨导出逻辑未改变。
+
+### English
+
+- **Fixed crackle after reopening an ARA project:** Restored ARA sources are now preloaded automatically by the document controller on a worker thread, without requiring the editor to be opened again.
+- **No host sample reads in the realtime callback:** The playback renderer no longer calls the ARA sample-access API block by block when the cache is missing. It keeps the block safely silent until the immutable cache is ready, then resumes playback automatically.
+- **Behavior unchanged elsewhere:** The analyzer, region boundaries, monitoring, Fade, Norm, Gain, EQ, project state, and three-stem export logic are unchanged.
 ## 1.19 更新 / What's new in 1.19
 
 ### 中文
