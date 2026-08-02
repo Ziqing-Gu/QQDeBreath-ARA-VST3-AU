@@ -4,16 +4,16 @@ QQDeBreath 1.20 - Windows / macOS VST3 / AU installation and usage guide
 PACKAGE CHOICE
 --------------
 
-1. QQDeBreath-macOS-Apple-Silicon-1.19.zip
+1. QQDeBreath-macOS-Apple-Silicon-1.20.zip
    VST3 for Apple Silicon Macs (M1/M2/M3/M4 and later).
 
-2. QQDeBreath-macOS-Intel-1.19.zip
+2. QQDeBreath-macOS-Intel-1.20.zip
    VST3 for Intel Macs.
 
-3. QQDeBreath-macOS-AU-Universal-1.19.zip
+3. QQDeBreath-macOS-AU-Universal-1.20.zip
    Universal 2 Audio Unit for Logic Pro. It contains arm64 and x86_64.
 
-4. QQDeBreath-Windows-x64-1.19.zip
+4. QQDeBreath-Windows-x64-1.20.zip
    VST3 for 64-bit Windows hosts.
 
 SYSTEM REQUIREMENTS
@@ -30,7 +30,7 @@ INSTALL LOCATIONS
 
 Windows VST3:
 1. Close the DAW.
-2. Extract QQDeBreath-Windows-x64-1.19.zip.
+2. Extract QQDeBreath-Windows-x64-1.20.zip.
 3. Copy the complete QQDeBreath.vst3 folder to:
      C:\Program Files\Common Files\VST3\
 4. Replace the old QQDeBreath.vst3 folder if one is already installed.
