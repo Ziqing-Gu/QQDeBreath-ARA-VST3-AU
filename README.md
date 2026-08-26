@@ -2,6 +2,11 @@
 
 当前插件版本 / Current plugin version: **1.20**
 
+## 下载 / Download
+
+- 最新正式版 / Latest release: [QQDeBreath ARA / VST3 / AU 1.20](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.20)
+- 全部历史版本 / All releases: [GitHub Releases](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases)
+
 ## 1.20 更新 / What's new in 1.20
 
 ### 中文
