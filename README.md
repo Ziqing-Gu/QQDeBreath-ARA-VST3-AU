@@ -1,3 +1,15 @@
+# ⚠️ 禁止商业使用 / NO COMMERCIAL USE
+
+## Qing Audio 非商业源码共享许可证 1.0
+
+### 本项目源码公开，但不属于 OSI 认可的开源软件
+
+> **禁止任何商业使用。** 仅允许个人、学习、教育、研究、评估、爱好及其他非商业用途。发布原版、二进制版或修改版时，必须同时免费公开完整对应源代码，保留作者、版权和许可证声明，醒目标明原项目名称、作者、来源链接、修改者、修改日期及修改内容，并使整个修改版继续采用同一许可证。完整条款见 [LICENSE](LICENSE)。
+>
+> **NO COMMERCIAL USE.** Use is permitted only for personal, educational, research, evaluation, hobby, charitable, and other non-commercial purposes. Any distributed original, binary, or modified version must provide the complete corresponding source without charge, preserve authorship, copyright, and license notices, prominently identify the original project, author, source URL, modifier, date, and changes, and license the entire modified work under the same terms. See [LICENSE](LICENSE).
+>
+> 许可证政策变更与后续 AI 维护说明见 [LICENSE_POLICY_CHANGE.md](LICENSE_POLICY_CHANGE.md)。 / See [LICENSE_POLICY_CHANGE.md](LICENSE_POLICY_CHANGE.md) for the policy record and future AI maintenance instructions.
+
 # QQDeBreath ARA / VST3 / AU
 
 当前插件版本 / Current plugin version: **1.20**
@@ -334,3 +346,11 @@ GitHub Actions publishes separate Apple Silicon VST3, Intel VST3, Universal 2 AU
 
 - `docs/QQDeBreath 1.19 Windows与macOS安装使用说明（中文）.txt`
 - `docs/QQDeBreath-1.19-Windows-macOS-INSTALL.txt`
+
+## 许可证 / License
+
+本项目第一方源码采用 **Qing Audio 非商业源码共享许可证 1.0**（`LicenseRef-Qing-Audio-NC-Source-Share-1.0`）。禁止任何商业使用。发布原版、二进制版或修改版时，必须同时免费公开完整对应源代码，保留作者、版权与许可证声明，注明原项目、作者、来源链接、修改者、修改日期及修改内容，并使整个修改版继续采用同一许可证。完整条款见 [LICENSE](LICENSE)。第三方组件继续适用其各自许可证。
+
+This project's first-party source is licensed under the **Qing Audio Non-Commercial Source-Share License 1.0** (`LicenseRef-Qing-Audio-NC-Source-Share-1.0`). Commercial use is prohibited. Distribution of the original, binary, or modified version requires the complete corresponding source at no charge, preserved authorship, copyright, and license notices, prominent identification of the original project, author, source URL, modifier, date, and changes, and the same license for the entire modified work. See [LICENSE](LICENSE). Third-party components remain under their respective licenses.
+
+Previously distributed copies retain rights already granted; this license applies to copies supplied with it. Policy record: [LICENSE_POLICY_CHANGE.md](LICENSE_POLICY_CHANGE.md).
