@@ -1,3 +1,9 @@
+# Current Plan definitions / 现行计划定义
+
+The checklist below is historical (old numbering). Since 2026-09-01, cross-platform desktop packaging is Plan C; Plan D is Release publication and README direct downloads. See [current release workflow](release_workflow.md).
+
+以下保留历史清单；现行跨平台桌面交付属于 Plan C，Plan D 为 Release 发布与下载入口。Plan B 完成后冻结，不得作为后续同步目录。
+
 # Plan D Release Checklist
 
 Plan D must include all Plan A, Plan B, and Plan C deliverables, plus:

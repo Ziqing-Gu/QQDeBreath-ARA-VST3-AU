@@ -4,9 +4,11 @@
 
 ### 本项目源码公开，但不属于 OSI 认可的开源软件
 
-> **禁止任何商业使用。** 仅允许个人、学习、教育、研究、评估、爱好及其他非商业用途。发布原版或修改版时，必须同时免费公开完整对应源代码，保留作者、版权和许可证声明，醒目标明原项目名称、作者、来源链接、修改者、修改日期及修改内容，并使整个修改版继续采用同一许可证。完整条款见 [LICENSE](LICENSE)。
+> **禁止任何商业使用。** 仅允许个人、学习、教育、研究、评估、爱好及其他非商业用途。发布原版、二进制版或修改版时，必须同时免费公开完整对应源代码，保留作者、版权和许可证声明，醒目标明原项目名称、作者、来源链接、修改者、修改日期及修改内容，并使整个修改版继续采用同一许可证。完整条款见 [LICENSE](LICENSE)。
 >
-> **NO COMMERCIAL USE.** Use is permitted only for personal, educational, research, evaluation, hobby, charitable, and other non-commercial purposes. Any distributed original or modified version must provide the complete corresponding source without charge, preserve authorship, copyright, and license notices, prominently identify the original project, author, source URL, modifier, date, and changes, and license the entire modified work under the same terms. See [LICENSE](LICENSE).
+> **NO COMMERCIAL USE.** Use is permitted only for personal, educational, research, evaluation, hobby, charitable, and other non-commercial purposes. Any distributed original, binary, or modified version must provide the complete corresponding source without charge, preserve authorship, copyright, and license notices, prominently identify the original project, author, source URL, modifier, date, and changes, and license the entire modified work under the same terms. See [LICENSE](LICENSE).
+>
+> 许可证政策变更与后续 AI 维护说明见 [LICENSE_POLICY_CHANGE.md](LICENSE_POLICY_CHANGE.md)。 / See [LICENSE_POLICY_CHANGE.md](LICENSE_POLICY_CHANGE.md) for the policy record and future AI maintenance instructions.
 
 # QQDeBreath ARA / VST3 / AU
 
@@ -15,14 +17,31 @@
 
 
 
-## 下载 / Download
+## 下载 / Downloads — 1.23 Stable
 
-- 最新正式版 / Latest release: [QQDeBreath ARA / VST3 / AU 1.23 Stable](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.23)
-- 全部历史版本 / All releases: [GitHub Releases](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases)
+**[最新正式版 / Latest Release](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/latest)** · [固定版本 / v1.23](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.23)
 
-## 1.23 Stable 下载 / Downloads
+| 文件 / Actual release asset | 选择说明 / Use |
+|---|---|
+| [QQDeBreath-1.23-Complete-Source.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-1.23-Complete-Source.zip) | 完整对应源码，不能直接安装 / Complete source, not an installer |
+| [QQDeBreath-1.23-Windows-macOS-INSTALL-ZH-CN.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-1.23-Windows-macOS-INSTALL-ZH-CN.txt) | 中文安装与升级说明 / Chinese installation guide |
+| [QQDeBreath-1.23-Windows-macOS-INSTALL.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-1.23-Windows-macOS-INSTALL.txt) | English installation / upgrade guide / 英文安装说明 |
+| [QQDeBreath-macOS-Apple-Silicon-1.23.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-macOS-Apple-Silicon-1.23.zip) | Apple Silicon 原生宿主 / native arm64 host — VST3 |
+| [QQDeBreath-macOS-AU-Universal-1.23.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-macOS-AU-Universal-1.23.zip) | macOS Universal 2 (arm64 + x86_64) — AU / Logic Pro |
+| [QQDeBreath-macOS-Intel-1.23.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-macOS-Intel-1.23.zip) | Intel 或 Rosetta x86_64 宿主 / Intel or Rosetta host — VST3 |
+| [QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf) | 中文图文手册，原 1.20 版 / Original 1.20 Chinese illustrated manual |
+| [QQDeBreath-Windows-x64-1.23.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-Windows-x64-1.23.zip) | Windows 10/11 x64 — VST3 |
+| [QQ_DeBreath_Tool_User_Manual_EN.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQ_DeBreath_Tool_User_Manual_EN.pdf) | 英文图文手册，原 1.20 版 / Original 1.20 English illustrated manual |
 
-[GitHub Release 1.23 Stable](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.23) — Windows x64 VST3、macOS Apple Silicon VST3、Intel VST3、Universal 2 AU；完整对应源码与双语安装说明随发布提供。Complete corresponding source and bilingual installation guides are included.
+Windows 用户下载 Windows x64 VST3。Mac VST3 只选择匹配宿主架构的一包；Logic Pro 使用 AU。无需同时安装所有格式。Linux 本次不提供。
+Windows users need the Windows x64 VST3. For Mac VST3 choose one matching host architecture; Logic Pro uses AU. Install only the formats you need. Linux is not provided.
+
+**GitHub 自动生成的 Source code (zip) / Source code (tar.gz) 是源码快照，不是可直接安装的插件。**
+**GitHub's automatic Source code (zip) / Source code (tar.gz) downloads are source snapshots, not installable plug-ins.**
+需要复现构建时使用 Complete-Source.zip，它同时包含 ARA SDK 和 JUCE；安装插件请使用相应平台 ZIP。For rebuilding, use Complete-Source.zip with its ARA SDK and JUCE; for installation, use the platform ZIP.
+
+恢复的两份图文手册是原有“独立版 1.11 / VST3-ARA 1.20”合订版，内容未修改。普通 VST3 请看第 3–5 页，ARA 请看第 6 页；第 1–2 页的独立应用不包含在本发行中。1.23 的播放同步变化见当前安装说明和下方版本记录。
+The restored illustrated manuals retain their original Standalone 1.11 / VST3-ARA 1.20 edition. Read pages 3–5 for ordinary VST3 and page 6 for ARA. The standalone application discussed on pages 1–2 is not included here. Use the current installation guide and version notes for 1.23 transport changes.
 
 ## 1.23 更新 / What's new in 1.23
 
@@ -44,6 +63,8 @@
 
 ## 1.22 更新 / What's new in 1.22
 
+**2026-09-19 — 候选版，用户未认可；停止/启动复位行为不符合要求，已由 1.23 取代。 / Candidate not accepted by the user; its stop/start reset behavior did not meet the requirement and was superseded by 1.23.**
+
 ### 中文
 
 - **保留波形点击试听：** 普通 VST3 中点击插件波形仍从对应位置播放；正常连续播放、原地停止/继续以及音频引擎重新准备均保留试听偏移。
@@ -59,6 +80,8 @@
 - **Other behavior preserved:** ARA, analysis, monitoring, Fade, Norm, Gain, EQ, and project-state format retain their existing behavior.
 
 ## 1.21 更新 / What's new in 1.21
+
+**2026-09-19 — 候选版，用户未认可；停止/启动复位行为不符合要求，已由 1.23 取代。 / Candidate not accepted by the user; its stop/start reset behavior did not meet the requirement and was superseded by 1.23.**
 
 ### 中文
 
@@ -409,3 +432,10 @@ GitHub Actions publishes separate Apple Silicon VST3, Intel VST3, Universal 2 AU
 This project's first-party source is licensed under the **Qing Audio Non-Commercial Source-Share License 1.0** (`LicenseRef-Qing-Audio-NC-Source-Share-1.0`). Commercial use is prohibited. Distribution of the original, binary, or modified version requires the complete corresponding source at no charge, preserved authorship, copyright, and license notices, prominent identification of the original project, author, source URL, modifier, date, and changes, and the same license for the entire modified work. See [LICENSE](LICENSE). Third-party components remain under their respective licenses.
 
 Previously distributed copies retain rights already granted; this License applies to copies supplied with it.
+
+## 维护与构建 / Maintenance and builds
+
+权威交接记录 / Authoritative handoff: [AI_DEVELOPMENT_HANDOFF.md](AI_DEVELOPMENT_HANDOFF.md)。
+现行发布规则 / Current release workflow: [release_workflow.md](docs/release_workflow.md)。
+Windows 成品复用本机 Plan A 已验证输出；GitHub Actions 默认只构建三类 macOS。Windows CI 只在用户明确要求时通过 build_windows=true 手动启用。
+Windows delivery reuses verified local Plan A output. GitHub Actions defaults to three macOS builds; enable build_windows=true only for explicitly requested Windows cloud reproduction.
