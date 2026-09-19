@@ -1,0 +1,7 @@
+QQDeBreath ARA/VST3/AU 1.21
+Date: 2026-09-19
+
+Fix plain VST3 internal preview offset persisting after DAW relocation.
+Host seek, stop, cycle wrap, and engine preparation restore timeline alignment.
+Stopped editor updates also clear stale preview offsets when audio callbacks are suspended.
+Internal audition remains available; ARA rendering and analysis DSP are unchanged.

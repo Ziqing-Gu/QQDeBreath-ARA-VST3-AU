@@ -1,0 +1,23 @@
+QQDeBreath 1.23 / internal VST3 1.0.23
+2026-09-19
+
+## 1.23 更新 / What's new in 1.23
+
+### 中文
+
+- 修复“停止时点击插件波形，按播放却回到 DAW 位置”的问题。所选音频位置保持为待播放状态，在第一个实际播放音频块建立时间对应关系，从点击处开始播放。
+- 停止期间重复的音频回调、启动时的宿主时间变化、零长度处理块和音频引擎重新准备不会吞掉待播放选择。
+- 后续 DAW 定位跳变仍取消内部试听偏移和内部循环，恢复原始工程时间线；停止时宿主报告的新定位也会取消待播放选择。
+- 普通 VST3 界面使用音频线程发布的位置快照，避免在界面线程直接读取宿主播放时钟。ARA、分析、监听及 EQ 处理保持原有行为。
+
+### English
+
+- Fixed a stopped waveform selection being lost when Play starts. The selected local sample remains pending until the first rendered playing block, where it is anchored to the actual host clock.
+- Repeated stopped callbacks, a different startup timestamp, zero-length blocks, and audio-engine preparation do not consume the pending selection.
+- Subsequent DAW seeks still cancel audition offsets and internal loops. A new host-reported stopped position cancels the pending selection before playback.
+- The ordinary VST3 editor reads a published audio-thread transport snapshot instead of querying the host playhead from the UI thread. ARA, analysis, monitoring, and EQ processing retain their existing behavior.
+
+
+Release status: Stable
+User acceptance: confirmed correct in the DAW; designated Stable on 2026-09-20.
+Stable marking changes documentation only; the verified 1.23 binary is unchanged.

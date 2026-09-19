@@ -140,6 +140,13 @@ public:
     void setInternalPreviewLoopRange(double startSeconds, double endSeconds, double hostTimeSeconds);
     void clearInternalPreviewLoop();
     void clearInternalPreviewPosition();
+    void syncStoppedPreviewWithHost(double hostTimeSeconds);
+    bool getCachedHostPosition(double& seconds, bool& isPlaying) const noexcept;
+    bool isInternalPreviewLoopEnabled() const noexcept
+    {
+        return internalPreviewActive.load(std::memory_order_acquire)
+            && internalPreviewLoopEnabled.load(std::memory_order_acquire);
+    }
     double getInternalPreviewPosition(double hostTimeSeconds) const;
     juce::AudioProcessorARAExtension* getARAClientExtensions() override { return this; }
     bool isBoundToAraHost() const noexcept { return isBoundToARA(); }
@@ -150,9 +157,11 @@ public:
 
 private:
     friend class QQDeBreathMonitorRoutingProbe;
+    friend class QQDeBreathTransportSyncProbe;
 
     void appendToRecordedBuffer(const juce::AudioBuffer<float>& buffer, double hostTimeSeconds);
     bool renderPreviewBlock(juce::AudioBuffer<float>& buffer, double hostTimeSeconds);
+    void resetPreviewOnHostTransportChange(double hostTimeSeconds, bool hostIsPlaying, int numSamples);
     double getInternalPreviewPositionUnlocked(double hostTimeSeconds) const;
     juce::Array<double> buildRegionPeakCacheForResult(const QQDeBreathBridgeAnalysisResult& result) const;
     bool exportRecordedBufferToWavUnchecked(const juce::File& outputFile, juce::String& status) const;
@@ -171,11 +180,31 @@ private:
     std::atomic<bool> globalDefaultsApplicationClaimed { false };
     std::atomic<int> droppedRecordBlocks { 0 };
     std::atomic<bool> internalPreviewActive { false };
+    std::atomic<bool> internalPreviewAwaitingPlayback { false };
+    std::atomic<std::uint64_t> internalPreviewRequestRevision { 0 };
     std::atomic<bool> internalPreviewLoopEnabled { false };
     std::atomic<double> internalPreviewAnchorLocalSeconds { 0.0 };
     std::atomic<double> internalPreviewAnchorHostSeconds { 0.0 };
     std::atomic<double> internalPreviewLoopStartSeconds { 0.0 };
     std::atomic<double> internalPreviewLoopEndSeconds { 0.0 };
+    // Audio-thread history only; the editor never updates these block timestamps.
+    std::uint64_t lastProcessedPreviewRequestRevision = 0;
+    bool havePreviousHostPosition = false;
+    bool previousHostIsPlaying = false;
+    double previousHostTimeSeconds = 0.0;
+    double previousHostBlockDurationSeconds = 0.0;
+    // Published audio position: even revisions identify a complete block range.
+    std::atomic<std::uint64_t> audioHostPositionRevision { 0 };
+    std::atomic<double> audioHostStartSeconds { 0.0 };
+    std::atomic<double> audioHostEndSeconds { 0.0 };
+    std::atomic<bool> audioHostIsPlaying { false };
+    std::atomic<std::uint64_t> stoppedUiAudioRevision { 0 };
+    std::atomic<double> stoppedUiHostSeconds { 0.0 };
+    // Message-thread history for hosts that suspend callbacks while stopped.
+    bool haveStoppedUiPosition = false;
+    double lastStoppedUiHostSeconds = 0.0;
+    std::uint64_t lastStoppedUiAudioRevision = 0;
+    std::uint64_t lastStoppedUiPreviewRequestRevision = 0;
     juce::AudioBuffer<float> previewBreathBuffer;
     QQDeBreathEqProcessor vst3BreathEqProcessor;
     QQDeBreathEqProcessor vst3RegionEqProcessor;

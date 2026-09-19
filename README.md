@@ -4,20 +4,75 @@
 
 ### 本项目源码公开，但不属于 OSI 认可的开源软件
 
-> **禁止任何商业使用。** 仅允许个人、学习、教育、研究、评估、爱好及其他非商业用途。发布原版、二进制版或修改版时，必须同时免费公开完整对应源代码，保留作者、版权和许可证声明，醒目标明原项目名称、作者、来源链接、修改者、修改日期及修改内容，并使整个修改版继续采用同一许可证。完整条款见 [LICENSE](LICENSE)。
+> **禁止任何商业使用。** 仅允许个人、学习、教育、研究、评估、爱好及其他非商业用途。发布原版或修改版时，必须同时免费公开完整对应源代码，保留作者、版权和许可证声明，醒目标明原项目名称、作者、来源链接、修改者、修改日期及修改内容，并使整个修改版继续采用同一许可证。完整条款见 [LICENSE](LICENSE)。
 >
-> **NO COMMERCIAL USE.** Use is permitted only for personal, educational, research, evaluation, hobby, charitable, and other non-commercial purposes. Any distributed original, binary, or modified version must provide the complete corresponding source without charge, preserve authorship, copyright, and license notices, prominently identify the original project, author, source URL, modifier, date, and changes, and license the entire modified work under the same terms. See [LICENSE](LICENSE).
->
-> 许可证政策变更与后续 AI 维护说明见 [LICENSE_POLICY_CHANGE.md](LICENSE_POLICY_CHANGE.md)。 / See [LICENSE_POLICY_CHANGE.md](LICENSE_POLICY_CHANGE.md) for the policy record and future AI maintenance instructions.
+> **NO COMMERCIAL USE.** Use is permitted only for personal, educational, research, evaluation, hobby, charitable, and other non-commercial purposes. Any distributed original or modified version must provide the complete corresponding source without charge, preserve authorship, copyright, and license notices, prominently identify the original project, author, source URL, modifier, date, and changes, and license the entire modified work under the same terms. See [LICENSE](LICENSE).
 
 # QQDeBreath ARA / VST3 / AU
 
-当前插件版本 / Current plugin version: **1.20**
+当前稳定版本 / Current stable version: **1.23 Stable**（用户验收通过 / user verified）
+
+
+
 
 ## 下载 / Download
 
 - 最新正式版 / Latest release: [QQDeBreath ARA / VST3 / AU 1.20](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.20)
 - 全部历史版本 / All releases: [GitHub Releases](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases)
+
+## 1.23 Stable 下载 / Downloads
+
+[GitHub Release 1.23 Stable](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.23) — Windows x64 VST3、macOS Apple Silicon VST3、Intel VST3、Universal 2 AU；完整对应源码与双语安装说明随发布提供。Complete corresponding source and bilingual installation guides are included.
+
+## 1.23 更新 / What's new in 1.23
+
+**Stable — 2026-09-20：用户已确认本版播放行为正确。/ The user confirmed the playback behavior and designated this version Stable.**
+
+### 中文
+
+- 修复“停止时点击插件波形，按播放却回到 DAW 位置”的问题。所选音频位置保持为待播放状态，在第一个实际播放音频块建立时间对应关系，从点击处开始播放。
+- 停止期间重复的音频回调、启动时的宿主时间变化、零长度处理块和音频引擎重新准备不会吞掉待播放选择。
+- 后续 DAW 定位跳变仍取消内部试听偏移和内部循环，恢复原始工程时间线；停止时宿主报告的新定位也会取消待播放选择。
+- 普通 VST3 界面使用音频线程发布的位置快照，避免在界面线程直接读取宿主播放时钟。ARA、分析、监听及 EQ 处理保持原有行为。
+
+### English
+
+- Fixed a stopped waveform selection being lost when Play starts. The selected local sample remains pending until the first rendered playing block, where it is anchored to the actual host clock.
+- Repeated stopped callbacks, a different startup timestamp, zero-length blocks, and audio-engine preparation do not consume the pending selection.
+- Subsequent DAW seeks still cancel audition offsets and internal loops. A new host-reported stopped position cancels the pending selection before playback.
+- The ordinary VST3 editor reads a published audio-thread transport snapshot instead of querying the host playhead from the UI thread. ARA, analysis, monitoring, and EQ processing retain their existing behavior.
+
+## 1.22 更新 / What's new in 1.22
+
+### 中文
+
+- **保留波形点击试听：** 普通 VST3 中点击插件波形仍从对应位置播放；正常连续播放、原地停止/继续以及音频引擎重新准备均保留试听偏移。
+- **DAW 定位优先：** 在 DAW 重新定位或时间线循环回跳时，清除内部试听偏移和内部 EQ 循环，播放指针与实际音频一起回到录音在工程中的原始时间线。
+- **修正 1.21 的过度复位：** 停止时根据最近的宿主播放位置判断是否跳转，不再与最初点击波形的时间比较；宿主暂停音频回调时也支持停止状态下重新定位。
+- **其他功能保留：** ARA 处理、分析、监听、Fade、Norm、Gain、EQ 和工程状态格式保持原有行为。
+
+### English
+
+- **Waveform audition preserved:** Ordinary VST3 waveform clicks still select the audio to play. Continuous playback, pause/resume in place, and audio-engine preparation retain the audition offset.
+- **DAW relocation takes priority:** A DAW seek or timeline cycle wrap clears the audition offset and internal EQ loop, aligning both the cursor and actual audio with the recording's original timeline.
+- **Corrected the 1.21 reset conditions:** Stopped transport is compared with the latest host position, not the original waveform-click timestamp. Stopped seeks also work when the host suspends audio callbacks.
+- **Other behavior preserved:** ARA, analysis, monitoring, Fade, Norm, Gain, EQ, and project-state format retain their existing behavior.
+
+## 1.21 更新 / What's new in 1.21
+
+### 中文
+
+- **普通 VST3 恢复 DAW 定位同步：** 在插件内点击波形试听后，DAW 前跳、后跳、停止或循环回跳会清除内部试听偏移及内部 EQ 循环，使播放指针和实际音频重新对齐录音在工程中的原始位置。
+- **保留插件内试听：** 连续播放期间保留波形点击位置；停止时新选择的试听位置可在原位置启动播放，DAW 再次定位后恢复跟随。
+- **停止时也能归位：** 对暂停音频回调的宿主，编辑器在停止状态检测定位变化并同步指针。音频引擎重新准备时清除旧试听偏移。
+- **回归验证：** 新增宿主定位测试，检查 44.1/48/96 kHz、采样数/秒时间戳、变长音频块和非零录音起点的指针与实际音频采样对齐。
+
+### English
+
+- **Plain VST3 follows DAW relocation again:** After an internal waveform seek, a DAW seek, stop, or cycle wrap clears the temporary preview offset and internal EQ loop. Both the cursor and rendered audio return to the recording's original timeline position.
+- **Internal audition preserved:** Continuous playback retains the selected preview position. A new selection made while stopped can start at the same host position; relocating the DAW returns control to its timeline.
+- **Stopped-host support:** The editor also detects stopped relocation when the host suspends audio callbacks. Preparing the audio engine clears stale preview offsets.
+- **Regression coverage:** Transport tests verify cursor and rendered sample alignment at 44.1/48/96 kHz, with sample/seconds timestamps, variable block sizes, and a nonzero recording origin.
 
 ## 1.20 更新 / What's new in 1.20
 
@@ -353,4 +408,4 @@ GitHub Actions publishes separate Apple Silicon VST3, Intel VST3, Universal 2 AU
 
 This project's first-party source is licensed under the **Qing Audio Non-Commercial Source-Share License 1.0** (`LicenseRef-Qing-Audio-NC-Source-Share-1.0`). Commercial use is prohibited. Distribution of the original, binary, or modified version requires the complete corresponding source at no charge, preserved authorship, copyright, and license notices, prominent identification of the original project, author, source URL, modifier, date, and changes, and the same license for the entire modified work. See [LICENSE](LICENSE). Third-party components remain under their respective licenses.
 
-Previously distributed copies retain rights already granted; this license applies to copies supplied with it. Policy record: [LICENSE_POLICY_CHANGE.md](LICENSE_POLICY_CHANGE.md).
+Previously distributed copies retain rights already granted; this License applies to copies supplied with it.

@@ -1,0 +1,102 @@
+QQDeBreath 1.22 - Windows / macOS VST3 / AU installation and usage guide
+==========================================================================
+
+PACKAGE CHOICE
+--------------
+
+1. QQDeBreath-macOS-Apple-Silicon-1.22.zip
+   VST3 for Apple Silicon Macs (M1/M2/M3/M4 and later).
+
+2. QQDeBreath-macOS-Intel-1.22.zip
+   VST3 for Intel Macs.
+
+3. QQDeBreath-macOS-AU-Universal-1.22.zip
+   Universal 2 Audio Unit for Logic Pro. It contains arm64 and x86_64.
+
+4. QQDeBreath-Windows-x64-1.22.zip
+   VST3 for 64-bit Windows hosts.
+
+SYSTEM REQUIREMENTS
+-------------------
+
+- macOS 11 or later.
+- A compatible 64-bit DAW.
+- These free builds are ad-hoc signed, not Developer ID signed or notarized.
+- Windows 10 or Windows 11 x64 for the Windows VST3 build.
+- A 64-bit VST3-compatible Windows DAW.
+
+INSTALL LOCATIONS
+-----------------
+
+Windows VST3:
+1. Close the DAW.
+2. Extract QQDeBreath-Windows-x64-1.22.zip.
+3. Copy the complete QQDeBreath.vst3 folder to:
+     C:\Program Files\Common Files\VST3\
+4. Replace the old QQDeBreath.vst3 folder if one is already installed.
+5. Restart the DAW and rescan or reactivate QQDeBreath in the plug-in manager.
+
+If Windows marks the downloaded ZIP as blocked, right-click the ZIP, open
+Properties, select Unblock, click Apply, and then extract it again.
+
+macOS VST3:
+Copy QQDeBreath.vst3 to:
+  /Library/Audio/Plug-Ins/VST3/
+
+Copy QQDeBreath.component to:
+  /Library/Audio/Plug-Ins/Components/
+
+Restart the DAW and rescan plug-ins after installation or replacement.
+
+USAGE
+-----
+
+ARA in Cubase/Nuendo:
+1. Add QQDeBreath as an Audio Extension to the selected audio event.
+2. Open QQDeBreath and click Load.
+3. Click Analyze, edit Breath/Noise regions, monitor the required stems, and export when ready.
+
+Plain VST3 recording:
+1. Insert QQDeBreath on the vocal track.
+2. Click Record to arm it, then play the DAW timeline.
+3. Stop DAW playback to stop recording.
+4. Click Analyze and continue editing/monitoring.
+
+Logic Pro / AU / ARA 2:
+- Logic Pro does not load VST3. Install QQDeBreath.component.
+- Insert QQDeBreath in the first Audio Effect slot to use ARA mode.
+- On Apple Silicon, Apple currently requires Logic Pro to run with Rosetta for third-party ARA Audio Units. Quit Logic, open Applications, select Logic Pro, choose Get Info, enable Open using Rosetta, then reopen Logic.
+
+FIRST-LAUNCH SECURITY NOTICE
+----------------------------
+
+If macOS blocks QQDeBreath during the first scan:
+1. Trigger one plug-in scan in the DAW.
+2. Open System Settings > Privacy & Security.
+3. Find the QQDeBreath warning and click Open Anyway.
+4. Enter the Mac login password and confirm.
+5. Restart the DAW and rescan/reactivate QQDeBreath.
+
+Trusted-source fallback commands:
+
+  sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/VST3/QQDeBreath.vst3"
+  sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/Components/QQDeBreath.component"
+
+Only run these commands for archives downloaded from the official QQDeBreath GitHub repository.
+
+
+## 1.22 更新 / What's new in 1.22
+
+### 中文
+
+- **保留波形点击试听：** 普通 VST3 中点击插件波形仍从对应位置播放；正常连续播放、原地停止/继续以及音频引擎重新准备均保留试听偏移。
+- **DAW 定位优先：** 在 DAW 重新定位或时间线循环回跳时，清除内部试听偏移和内部 EQ 循环，播放指针与实际音频一起回到录音在工程中的原始时间线。
+- **修正 1.21 的过度复位：** 停止时根据最近的宿主播放位置判断是否跳转，不再与最初点击波形的时间比较；宿主暂停音频回调时也支持停止状态下重新定位。
+- **其他功能保留：** ARA 处理、分析、监听、Fade、Norm、Gain、EQ 和工程状态格式保持原有行为。
+
+### English
+
+- **Waveform audition preserved:** Ordinary VST3 waveform clicks still select the audio to play. Continuous playback, pause/resume in place, and audio-engine preparation retain the audition offset.
+- **DAW relocation takes priority:** A DAW seek or timeline cycle wrap clears the audition offset and internal EQ loop, aligning both the cursor and actual audio with the recording's original timeline.
+- **Corrected the 1.21 reset conditions:** Stopped transport is compared with the latest host position, not the original waveform-click timestamp. Stopped seeks also work when the host suspends audio callbacks.
+- **Other behavior preserved:** ARA, analysis, monitoring, Fade, Norm, Gain, EQ, and project-state format retain their existing behavior.

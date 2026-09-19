@@ -1,0 +1,20 @@
+{
+  "product": "QQDeBreath",
+  "version": "1.23",
+  "internalVersion": "1.0.23",
+  "status": "Stable",
+  "confirmedAt": "2026-09-20T00:04:51+08:00",
+  "confirmationSource": "User confirmed this version works correctly and requested Stable + Plan B",
+  "validatedScope": "Windows VST3 waveform audition, starting from a stopped selection, and DAW relocation alignment",
+  "binaryChangedForStableMarking": false,
+  "pluginFiles": {
+    "Contents/Resources/moduleinfo.json": {
+      "bytes": 1421,
+      "sha256": "fc9ae28c5b28dca9d5da6c241afcbaef1697670c52bce061bc06e788280d8948"
+    },
+    "Contents/x86_64-win/QQDeBreath.vst3": {
+      "bytes": 7434240,
+      "sha256": "948ab012801d3de05eb91e3ca618aaa6aca4259f91d479139e942ec901e999d3"
+    }
+  }
+}

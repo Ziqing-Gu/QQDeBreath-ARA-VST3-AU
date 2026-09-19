@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(QQDeBreath VERSION 1.0.20 LANGUAGES C CXX)
+project(QQDeBreath VERSION 1.0.23 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -187,3 +187,14 @@ target_link_libraries(qq_debreath_editor_state_probe
         juce::juce_audio_utils
         juce::juce_dsp
 )
+
+add_executable(qq_debreath_transport_sync_probe tests/TransportSyncProbe.cpp)
+target_include_directories(qq_debreath_transport_sync_probe PRIVATE src)
+target_compile_features(qq_debreath_transport_sync_probe PRIVATE cxx_std_17)
+if(MSVC)
+    target_compile_options(qq_debreath_transport_sync_probe PRIVATE /utf-8)
+    target_link_options(qq_debreath_transport_sync_probe PRIVATE /ENTRY:wmainCRTStartup)
+endif()
+target_link_libraries(qq_debreath_transport_sync_probe PRIVATE
+    QQDeBreath ARA_PlugIn_Library juce::juce_audio_plugin_client
+    juce::juce_audio_utils juce::juce_dsp)
