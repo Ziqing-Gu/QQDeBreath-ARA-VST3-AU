@@ -17,7 +17,7 @@
 
 ## 下载 / Download
 
-- 最新正式版 / Latest release: [QQDeBreath ARA / VST3 / AU 1.20](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.20)
+- 最新正式版 / Latest release: [QQDeBreath ARA / VST3 / AU 1.23 Stable](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.23)
 - 全部历史版本 / All releases: [GitHub Releases](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases)
 
 ## 1.23 Stable 下载 / Downloads
