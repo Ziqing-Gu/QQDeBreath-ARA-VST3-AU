@@ -16,6 +16,33 @@
 
 1.25 已由用户验收并指定 Stable；本次同步 1.24 与 1.25 的完整更新记录。 / The user accepted 1.25 and designated it Stable; this update includes the complete 1.24 and 1.25 history.
 
+## 下载 / Downloads — 1.25 Stable
+
+**[最新正式版 / Latest Release](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/latest)** · [固定版本 / v1.25](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.25)
+
+| 文件 / Actual release asset | 选择说明 / Use |
+|---|---|
+| [QQDeBreath-1.25-Complete-Source.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-1.25-Complete-Source.zip) | 完整对应源码，不能直接安装 / Complete source, not an installer |
+| [QQDeBreath-1.25-Windows-macOS-INSTALL-ZH-CN.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-1.25-Windows-macOS-INSTALL-ZH-CN.txt) | 中文安装与升级说明 / Chinese installation guide |
+| [QQDeBreath-1.25-Windows-macOS-INSTALL.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-1.25-Windows-macOS-INSTALL.txt) | English installation / upgrade guide / 英文安装说明 |
+| [QQDeBreath-macOS-Apple-Silicon-1.25.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-macOS-Apple-Silicon-1.25.zip) | Apple Silicon 原生宿主 / native arm64 host — VST3 |
+| [QQDeBreath-macOS-AU-Universal-1.25.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-macOS-AU-Universal-1.25.zip) | macOS Universal 2 (arm64 + x86_64) — AU / Logic Pro |
+| [QQDeBreath-macOS-Intel-1.25.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-macOS-Intel-1.25.zip) | Intel 或 Rosetta x86_64 宿主 / Intel or Rosetta host — VST3 |
+| [QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf) | 中文图文手册，原 1.20 版 / Original 1.20 Chinese illustrated manual |
+| [QQDeBreath-Windows-x64-1.25.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-Windows-x64-1.25.zip) | Windows 10/11 x64 — VST3 |
+| [QQ_DeBreath_Tool_User_Manual_EN.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQ_DeBreath_Tool_User_Manual_EN.pdf) | 英文图文手册，原 1.20 版 / Original 1.20 English illustrated manual |
+
+Windows 用户下载 Windows x64 VST3。Mac VST3 只选择匹配宿主架构的一包；Logic Pro 使用 AU。无需同时安装所有格式。Linux 本次不提供。
+Windows users need the Windows x64 VST3. For Mac VST3 choose one matching host architecture; Logic Pro uses AU. Install only the formats you need. Linux is not provided.
+
+**GitHub 自动生成的 Source code (zip) / Source code (tar.gz) 是源码快照，不是可直接安装的插件。**
+**GitHub's automatic Source code (zip) / Source code (tar.gz) downloads are source snapshots, not installable plug-ins.**
+需要复现构建时使用 Complete-Source.zip，它同时包含 ARA SDK 和 JUCE；安装插件请使用相应平台 ZIP。For rebuilding, use Complete-Source.zip with its ARA SDK and JUCE; for installation, use the platform ZIP.
+
+恢复的两份图文手册是原有“独立版 1.11 / VST3-ARA 1.20”合订版，内容未修改。普通 VST3 请看第 3–5 页，ARA 请看第 6 页；第 1–2 页的独立应用不包含在本发行中。1.23 的播放同步以及 1.24/1.25 的导出与流畅性变化见当前安装说明和下方版本记录。
+The restored illustrated manuals retain their original Standalone 1.11 / VST3-ARA 1.20 edition. Read pages 3–5 for ordinary VST3 and page 6 for ARA. The standalone application discussed on pages 1–2 is not included here. Use the current installation guide and version notes for 1.23 transport and 1.24/1.25 export/responsiveness changes.
+
+
 ## 1.25 Stable — 2026-09-22 / Parameter and Auto Apply responsiveness
 
 中文：优化 Gain、Norm Target 及全局/区域 EQ Auto Apply 的拖动响应。Gain/Norm Target 通过缩放处理后波形缓存更新显示，不再重复扫描和处理整段音频。EQ 波形计算移至只保留最新请求的后台线程；拖动时保留上一份完整波形，最新计算完成后更新。试听参数仍独立更新。缓存区域峰值、用区间索引绘制波形，并将动态频谱限制到当前窗口涉及的区域；拖动不再触发无关的全文件静态频谱计算。连续区域 EQ 拖动的 ARA 更新采用限频而非不断推迟。Auto Apply 关闭时的预览/Apply 规则不变。
@@ -41,31 +68,6 @@ English: Fixed excessive synchronous work in Export Stems. Region boundaries, ad
 
 
 
-## 下载 / Downloads — 1.23 Stable
-
-**[最新正式版 / Latest Release](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/latest)** · [固定版本 / v1.23](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.23)
-
-| 文件 / Actual release asset | 选择说明 / Use |
-|---|---|
-| [QQDeBreath-1.23-Complete-Source.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-1.23-Complete-Source.zip) | 完整对应源码，不能直接安装 / Complete source, not an installer |
-| [QQDeBreath-1.23-Windows-macOS-INSTALL-ZH-CN.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-1.23-Windows-macOS-INSTALL-ZH-CN.txt) | 中文安装与升级说明 / Chinese installation guide |
-| [QQDeBreath-1.23-Windows-macOS-INSTALL.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-1.23-Windows-macOS-INSTALL.txt) | English installation / upgrade guide / 英文安装说明 |
-| [QQDeBreath-macOS-Apple-Silicon-1.23.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-macOS-Apple-Silicon-1.23.zip) | Apple Silicon 原生宿主 / native arm64 host — VST3 |
-| [QQDeBreath-macOS-AU-Universal-1.23.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-macOS-AU-Universal-1.23.zip) | macOS Universal 2 (arm64 + x86_64) — AU / Logic Pro |
-| [QQDeBreath-macOS-Intel-1.23.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-macOS-Intel-1.23.zip) | Intel 或 Rosetta x86_64 宿主 / Intel or Rosetta host — VST3 |
-| [QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf) | 中文图文手册，原 1.20 版 / Original 1.20 Chinese illustrated manual |
-| [QQDeBreath-Windows-x64-1.23.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQDeBreath-Windows-x64-1.23.zip) | Windows 10/11 x64 — VST3 |
-| [QQ_DeBreath_Tool_User_Manual_EN.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.23/QQ_DeBreath_Tool_User_Manual_EN.pdf) | 英文图文手册，原 1.20 版 / Original 1.20 English illustrated manual |
-
-Windows 用户下载 Windows x64 VST3。Mac VST3 只选择匹配宿主架构的一包；Logic Pro 使用 AU。无需同时安装所有格式。Linux 本次不提供。
-Windows users need the Windows x64 VST3. For Mac VST3 choose one matching host architecture; Logic Pro uses AU. Install only the formats you need. Linux is not provided.
-
-**GitHub 自动生成的 Source code (zip) / Source code (tar.gz) 是源码快照，不是可直接安装的插件。**
-**GitHub's automatic Source code (zip) / Source code (tar.gz) downloads are source snapshots, not installable plug-ins.**
-需要复现构建时使用 Complete-Source.zip，它同时包含 ARA SDK 和 JUCE；安装插件请使用相应平台 ZIP。For rebuilding, use Complete-Source.zip with its ARA SDK and JUCE; for installation, use the platform ZIP.
-
-恢复的两份图文手册是原有“独立版 1.11 / VST3-ARA 1.20”合订版，内容未修改。普通 VST3 请看第 3–5 页，ARA 请看第 6 页；第 1–2 页的独立应用不包含在本发行中。1.23 的播放同步以及 1.24/1.25 的导出与流畅性变化见当前安装说明和下方版本记录。
-The restored illustrated manuals retain their original Standalone 1.11 / VST3-ARA 1.20 edition. Read pages 3–5 for ordinary VST3 and page 6 for ARA. The standalone application discussed on pages 1–2 is not included here. Use the current installation guide and version notes for 1.23 transport and 1.24/1.25 export/responsiveness changes.
 
 ## 1.23 更新 / What's new in 1.23
 
