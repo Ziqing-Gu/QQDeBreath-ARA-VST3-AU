@@ -1,0 +1,7 @@
+QQDeBreath ARA/VST3/AU 1.24 Candidate
+Internal version: 1.0.24
+Baseline and rollback: 1.23 Stable
+Date: 2026-09-22
+Plan A: Export Stems performance and cancellable background export.
+Windows x64 VST3 build passed. 36 comparisons against frozen 1.23 DSP at 44.1/48/96 kHz passed with zero sample difference; background recorded/local-WAV export, WAV contents, cancellation preserving existing files, temporary-file cleanup, error handling and worker destruction passed. Existing editor/monitor/instance and transport probes passed; Steinberg loading check exited 0. Synthetic 1-second/100-region render: 1.21323 s legacy vs 0.000698 s candidate; 120 seconds/1000 regions: 0.0781656 s (render only, not disk I/O). No real DAW or macOS acceptance claimed. Installed 1.23 is unchanged.
+No Stable promotion, Plan B, GitHub publication, or macOS build in this task.

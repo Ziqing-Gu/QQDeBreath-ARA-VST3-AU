@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.22)
+﻿cmake_minimum_required(VERSION 3.22)
 
-project(QQDeBreath VERSION 1.0.23 LANGUAGES C CXX)
+project(QQDeBreath VERSION 1.0.25 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -71,6 +71,8 @@ target_sources(QQDeBreath
         src/PluginEditor.cpp
         src/Parameters.cpp
         src/shared/BridgeAnalysis.cpp
+        src/shared/WaveformDisplayRender.cpp
+        src/shared/StemExport.cpp
         src/shared/BreathEq.cpp
         src/shared/BreathEqComponent.cpp
         src/shared/NativeAnalysis.cpp
@@ -196,5 +198,25 @@ if(MSVC)
     target_link_options(qq_debreath_transport_sync_probe PRIVATE /ENTRY:wmainCRTStartup)
 endif()
 target_link_libraries(qq_debreath_transport_sync_probe PRIVATE
+    QQDeBreath ARA_PlugIn_Library juce::juce_audio_plugin_client
+    juce::juce_audio_utils juce::juce_dsp)
+
+add_executable(qq_debreath_stem_export_probe tests/StemExportProbe.cpp)
+target_include_directories(qq_debreath_stem_export_probe PRIVATE src)
+target_compile_features(qq_debreath_stem_export_probe PRIVATE cxx_std_17)
+if(MSVC)
+    target_compile_options(qq_debreath_stem_export_probe PRIVATE /utf-8)
+endif()
+target_link_libraries(qq_debreath_stem_export_probe PRIVATE
+    QQDeBreath ARA_PlugIn_Library juce::juce_audio_plugin_client
+    juce::juce_audio_utils juce::juce_dsp)
+
+add_executable(qq_debreath_waveform_display_probe tests/WaveformDisplayProbe.cpp tests/LegacyWaveform124.cpp)
+target_include_directories(qq_debreath_waveform_display_probe PRIVATE src tests)
+target_compile_features(qq_debreath_waveform_display_probe PRIVATE cxx_std_17)
+if(MSVC)
+    target_compile_options(qq_debreath_waveform_display_probe PRIVATE /utf-8)
+endif()
+target_link_libraries(qq_debreath_waveform_display_probe PRIVATE
     QQDeBreath ARA_PlugIn_Library juce::juce_audio_plugin_client
     juce::juce_audio_utils juce::juce_dsp)

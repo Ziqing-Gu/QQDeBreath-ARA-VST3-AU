@@ -1,4 +1,4 @@
-#include "PluginEditor.h"
+﻿#include "PluginEditor.h"
 
 #include "shared/NativeAnalysis.h"
 #include "Version.h"
@@ -395,7 +395,7 @@ QQDeBreathAudioProcessorEditor::QQDeBreathAudioProcessorEditor(QQDeBreathAudioPr
     addAndMakeVisible(titleLabel);
     titleLabel.setVisible(false);
 
-    phaseLabel.setText("QQDeBreath ARA 1.23 Native + Global/Selected Breath EQ", juce::dontSendNotification);
+    phaseLabel.setText("QQDeBreath ARA 1.25 Native + Global/Selected Breath EQ", juce::dontSendNotification);
     phaseLabel.setJustificationType(juce::Justification::centred);
     phaseLabel.setColour(juce::Label::textColourId, juce::Colour(0xffcbd5e1));
     phaseLabel.setFont(juce::Font(18.0f, juce::Font::plain));
@@ -602,12 +602,7 @@ QQDeBreathAudioProcessorEditor::QQDeBreathAudioProcessorEditor(QQDeBreathAudioPr
     fadeInSlider.onValueChange = [this] { syncAraPlaybackParams(); };
     fadeOutSlider.onValueChange = [this] { syncAraPlaybackParams(); };
     breathTargetSlider.onValueChange = [this] { syncAraPlaybackParams(); };
-    breathGainSlider.onValueChange = [this]
-    {
-        syncAraPlaybackParams();
-        requestDeferredSpectrumRefresh();
-        requestDeferredWaveformRefresh(false);
-    };
+    breathGainSlider.onValueChange = [this] { syncAraPlaybackParams(); };
     juce::Slider* sliders[] = { &fadeInSlider, &fadeOutSlider, &breathTargetSlider, &breathGainSlider, &waveformSizeSlider };
     for (auto* slider : sliders)
         addAndMakeVisible(*slider);
@@ -790,7 +785,7 @@ QQDeBreathAudioProcessorEditor::QQDeBreathAudioProcessorEditor(QQDeBreathAudioPr
             requestDeferredWaveformRefresh(true);
         }
 
-        requestDeferredSpectrumRefresh();
+    
     };
     breathDetailEqEditor.setTheme("Selected Breath EQ", juce::Colour(0xfff59e0b), juce::Colour(0xffa78bfa));
     addChildComponent(breathDetailEqEditor);
@@ -816,6 +811,9 @@ QQDeBreathAudioProcessorEditor::QQDeBreathAudioProcessorEditor(QQDeBreathAudioPr
 
 QQDeBreathAudioProcessorEditor::~QQDeBreathAudioProcessorEditor()
 {
+    stopTimer();
+    fileChooser.reset();
+    exportJob.reset();
     cancelAnalysis();
 }
 
@@ -1214,16 +1212,18 @@ void QQDeBreathAudioProcessorEditor::updateRecordingInfo()
     const auto araContext = isAraContext();
     const auto result = audioProcessor.getAnalysisResult();
     const auto canExportStems = result.succeeded && hasAnalyzableSource(info);
-    loadAraButton.setEnabled(araContext && ! analysisRunning);
-    recordButton.setEnabled(! araContext && ! info.isRecordArmed && ! analysisRunning);
+    const auto exportRunning = exportJob != nullptr;
+    loadAraButton.setEnabled(araContext && ! analysisRunning && ! exportRunning);
+    recordButton.setEnabled(! araContext && ! info.isRecordArmed && ! analysisRunning && ! exportRunning);
     stopButton.setEnabled(! araContext && (info.isRecordArmed || info.isRecording) && ! analysisRunning);
-    clearButton.setEnabled(! araContext && (info.isRecordArmed || info.hasRecording) && ! analysisRunning);
-    exportButton.setEnabled(! info.isRecordArmed && ! info.isRecording && canExportStems && ! analysisRunning);
+    clearButton.setEnabled(! araContext && (info.isRecordArmed || info.hasRecording) && ! analysisRunning && ! exportRunning);
+    exportButton.setEnabled(exportRunning || (! info.isRecordArmed && ! info.isRecording && canExportStems && ! analysisRunning && fileChooser == nullptr));
     undoButton.setEnabled(waveformEditor.canUndo() && ! analysisRunning);
     redoButton.setEnabled(waveformEditor.canRedo() && ! analysisRunning);
 
     updateAnalysisInfo();
     updatePlayheadFromHost(info);
+    updateExportStatus();
 }
 
 bool QQDeBreathAudioProcessorEditor::isAraContext() const
@@ -1564,8 +1564,7 @@ void QQDeBreathAudioProcessorEditor::applyBreathDetailFromUi()
     {
         requestDeferredWaveformRefresh(false);
     }
-    if (showingBreathDetailPage)
-        requestDeferredSpectrumRefresh();
+
 }
 
 void QQDeBreathAudioProcessorEditor::updateBreathDetailPreviewForListening(double gainDb, const QQDeBreathEqState& eqState)
@@ -2048,7 +2047,7 @@ void QQDeBreathAudioProcessorEditor::applyBreathEqStateFromUi(const QQDeBreathEq
         breathEqPreviewDirty = showingBreathEqPage;
     }
 
-    requestDeferredSpectrumRefresh();
+
 }
 
 void QQDeBreathAudioProcessorEditor::applyBreathEqPreviewToWaveform()
@@ -2170,8 +2169,8 @@ void QQDeBreathAudioProcessorEditor::requestDeferredSpectrumRefresh()
 
 void QQDeBreathAudioProcessorEditor::requestDeferredAraRuntimeUpdate()
 {
+    if (!pendingAraRuntimeUpdate) pendingAraRuntimeUpdateMs = juce::Time::getMillisecondCounter();
     pendingAraRuntimeUpdate = true;
-    pendingAraRuntimeUpdateMs = juce::Time::getMillisecondCounter();
 }
 
 void QQDeBreathAudioProcessorEditor::rollbackBreathEqPreviewIfNeeded()
@@ -2217,6 +2216,7 @@ void QQDeBreathAudioProcessorEditor::refreshBreathEqSpectrumSource()
         return;
 
     breathEqSpectrumSourceKey.clear();
+    breathEqSpectrumPeakMemo.clear();
     breathEqSpectrumSampleRate = 0.0;
     breathEqSpectrumSourceBuffer.setSize(0, 0);
 
@@ -2545,30 +2545,63 @@ void QQDeBreathAudioProcessorEditor::updateBreathEqDynamicSpectrum()
                               ? static_cast<int>(std::llround(audioProcessor.parameters.getRawParameterValue(QQDeBreath::ParamIDs::fadeOutMs)->load() * breathEqSpectrumSampleRate / 1000.0))
                               : 0;
 
-    std::vector<double> peakCache(static_cast<size_t>(result.regions.size()), -1.0);
-    auto peakForRegion = [&](int regionIndex)
-    {
-        auto& cached = peakCache[static_cast<size_t>(regionIndex)];
-        if (cached >= 0.0)
-            return cached;
-
-        const auto& region = result.regions.getReference(regionIndex);
-        const auto start = regionStartSample(region, breathEqSpectrumSampleRate, breathEqSpectrumSourceBuffer.getNumSamples());
-        const auto end = regionEndSample(region, breathEqSpectrumSampleRate, breathEqSpectrumSourceBuffer.getNumSamples());
-        auto peak = 0.0f;
-        for (auto channel = 0; channel < breathEqSpectrumSourceBuffer.getNumChannels(); ++channel)
-        {
-            const auto* data = breathEqSpectrumSourceBuffer.getReadPointer(channel);
-            for (auto sample = start; sample < end; ++sample)
-                peak = juce::jmax(peak, std::abs(data[static_cast<int>(sample)]));
-        }
-
-        cached = static_cast<double>(peak);
-        return cached;
-    };
-
     const auto centerSample = static_cast<juce::int64>(std::llround(localSeconds * breathEqSpectrumSampleRate));
     const auto startSample = centerSample - fftSize / 2;
+    struct SpectrumRegion
+    {
+        juce::int64 start, end;
+        bool adjacentBefore, adjacentAfter;
+        double normGain, gain;
+        double weight(juce::int64 sample, int fadeInSamples, int fadeOutSamples) const
+        {
+    if (sample >= start && sample < end)
+    {
+        auto weight = 1.0;
+        if (fadeInSamples > 0 && ! adjacentBefore)
+            weight = juce::jmin(weight, static_cast<double>(sample - start) / juce::jmax(1, fadeInSamples - 1));
+
+        if (fadeOutSamples > 0 && ! adjacentAfter)
+            weight = juce::jmin(weight, static_cast<double>(end - 1 - sample) / juce::jmax(1, fadeOutSamples - 1));
+
+        return juce::jlimit(0.0, 1.0, weight);
+    }
+
+    if (adjacentBefore && sample >= start - fadeInSamples && sample < start)
+        return juce::jlimit(0.0, 1.0, static_cast<double>(sample - (start - fadeInSamples)) / juce::jmax(1, fadeInSamples));
+
+    if (adjacentAfter && sample >= end && sample < end + fadeOutSamples)
+        return juce::jlimit(0.0, 1.0, 1.0 - static_cast<double>(sample - end) / juce::jmax(1, fadeOutSamples));
+
+    return 0.0;
+
+        }
+    };
+    std::vector<SpectrumRegion> candidates;
+    for (auto regionIndex = 0; regionIndex < result.regions.size(); ++regionIndex)
+    {
+        const auto& region = result.regions.getReference(regionIndex);
+        if (region.type.equalsIgnoreCase("Noize") || (detailPage && regionIndex != selectedRegionIndex)) continue;
+        const auto start = regionStartSample(region, breathEqSpectrumSampleRate, breathEqSpectrumSourceBuffer.getNumSamples());
+        const auto end = regionEndSample(region, breathEqSpectrumSampleRate, breathEqSpectrumSourceBuffer.getNumSamples());
+        if (start - fadeInSamples >= startSample + fftSize || end + fadeOutSamples <= startSample) continue;
+        auto norm = 1.0;
+        if (normalizeBreath)
+        {
+            const auto key = std::make_pair(start, end);
+            auto found = breathEqSpectrumPeakMemo.find(key);
+            if (found == breathEqSpectrumPeakMemo.end())
+            {
+                const auto count = static_cast<int>(juce::jmax<juce::int64>(0, end - start));
+                const auto peak = count > 0 ? breathEqSpectrumSourceBuffer.getMagnitude(static_cast<int>(start), count) : 0.0f;
+                found = breathEqSpectrumPeakMemo.emplace(key, static_cast<double>(peak)).first;
+            }
+            if (found->second > 1.0e-9) norm = breathTargetGain / found->second;
+        }
+        candidates.push_back({ start, end,
+            fadeInSamples > 0 && hasAdjacentRegionBefore(result.regions, regionIndex, start, fadeInSamples, breathEqSpectrumSampleRate, breathEqSpectrumSourceBuffer.getNumSamples()),
+            fadeOutSamples > 0 && hasAdjacentRegionAfter(result.regions, regionIndex, end, fadeOutSamples, breathEqSpectrumSampleRate, breathEqSpectrumSourceBuffer.getNumSamples()),
+            norm, dbToGain(juce::jlimit(-30.0, 30.0, detailPage ? 0.0 : region.gainDb)) });
+    }
     auto hasBreath = false;
 
     for (auto i = 0; i < fftSize; ++i)
@@ -2581,34 +2614,14 @@ void QQDeBreathAudioProcessorEditor::updateBreathEqDynamicSpectrum()
         double breathNormGain = 1.0;
         double regionGain = 1.0;
 
-        for (auto regionIndex = 0; regionIndex < result.regions.size(); ++regionIndex)
+        for (const auto& region : candidates)
         {
-            const auto& region = result.regions.getReference(regionIndex);
-            if (region.type.equalsIgnoreCase("Noize"))
-                continue;
-
-            if (detailPage && regionIndex != selectedRegionIndex)
-                continue;
-
-            const auto weight = regionWeightForIndex(result.regions,
-                                                     regionIndex,
-                                                     sourceSample,
-                                                     breathEqSpectrumSampleRate,
-                                                     breathEqSpectrumSourceBuffer.getNumSamples(),
-                                                     fadeInSamples,
-                                                     fadeOutSamples);
-            if (weight >= breathWeight)
+            const auto weight = region.weight(sourceSample, fadeInSamples, fadeOutSamples);
+            if (weight > 0.0 && weight >= breathWeight)
             {
                 breathWeight = weight;
-                const auto previewGainDb = detailPage && regionIndex == selectedRegionIndex
-                                         ? 0.0
-                                         : region.gainDb;
-                regionGain = dbToGain(juce::jlimit(-30.0, 30.0, previewGainDb));
-                if (normalizeBreath)
-                {
-                    const auto peak = peakForRegion(regionIndex);
-                    breathNormGain = peak > 1.0e-9 ? breathTargetGain / peak : 1.0;
-                }
+                breathNormGain = region.normGain;
+                regionGain = region.gain;
             }
         }
 
@@ -3325,243 +3338,121 @@ bool QQDeBreathAudioProcessorEditor::hasAnalyzableSource(const QQDeBreathAudioPr
 
 void QQDeBreathAudioProcessorEditor::exportRecording()
 {
+    if (exportJob != nullptr)
+    {
+        exportJob->signalThreadShouldExit();
+        exportButton.setButtonText("Cancelling...");
+        return;
+    }
+    if (fileChooser != nullptr) return;
     const auto info = audioProcessor.getRecordedBufferInfo();
     if (! hasAnalyzableSource(info))
     {
-        statusLabel.setText("Status: No loaded ARA source or recorded buffer to export.", juce::dontSendNotification);
+        exportStatus = "No loaded ARA source or recorded buffer to export.";
+        updateExportStatus();
         return;
     }
-
     fileChooser = std::make_unique<juce::FileChooser>("Choose QQDeBreath export folder",
-                                                      juce::File::getSpecialLocation(juce::File::userDocumentsDirectory),
-                                                      "*");
-
-    fileChooser->launchAsync(juce::FileBrowserComponent::openMode
-                           | juce::FileBrowserComponent::canSelectDirectories,
-                             [this](const juce::FileChooser& chooser)
-                             {
-                                 const auto directory = chooser.getResult();
-                                 if (directory != juce::File{})
-                                     exportToDirectory(directory);
-
-                                 fileChooser.reset();
-                             });
+                                                       juce::File::getSpecialLocation(juce::File::userDocumentsDirectory), "*");
+    exportButton.setEnabled(false);
+    fileChooser->launchAsync(juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectDirectories,
+        [safe = juce::Component::SafePointer<QQDeBreathAudioProcessorEditor>(this)](const juce::FileChooser& chooser)
+        {
+            if (safe == nullptr) return;
+            const auto directory = chooser.getResult();
+            safe->fileChooser.reset();
+            if (directory != juce::File{}) safe->exportToDirectory(directory);
+            safe->updateRecordingInfo();
+        });
 }
 
 void QQDeBreathAudioProcessorEditor::exportToDirectory(const juce::File& directory)
 {
-    if (! directory.createDirectory())
+    if (exportJob != nullptr) return;
+    exportStatus.clear();
+    exportStatusUntilMs = 0;
+    try
     {
-        statusLabel.setText("Status: Could not create export folder: " + directory.getFullPathName(), juce::dontSendNotification);
-        return;
+        const auto info = audioProcessor.getRecordedBufferInfo();
+        if (info.isRecordArmed || info.isRecording || (analysisThread != nullptr && analysisThread->isThreadRunning()))
+        {
+            exportStatus = "Finish recording or analysis before exporting.";
+            updateExportStatus();
+            return;
+        }
+        const auto result = audioProcessor.getAnalysisResult();
+        if (!result.succeeded)
+        {
+            exportStatus = "Analyze first to export Vocal Only/Breath/Noize stems.";
+            updateExportStatus();
+            return;
+        }
+        QQDeBreathStemExport::Request request;
+        request.directory = directory;
+        request.regions = result.regions;
+        auto& settings = request.settings;
+        const auto parameter = [this](const char* id) { return audioProcessor.parameters.getRawParameterValue(id)->load(); };
+        settings.enableFade = parameter(QQDeBreath::ParamIDs::enableFade) >= 0.5f;
+        settings.normalizeBreath = parameter(QQDeBreath::ParamIDs::normalizeBreath) >= 0.5f;
+        settings.fadeInMs = parameter(QQDeBreath::ParamIDs::fadeInMs);
+        settings.fadeOutMs = parameter(QQDeBreath::ParamIDs::fadeOutMs);
+        settings.breathTargetDb = parameter(QQDeBreath::ParamIDs::breathTargetDb);
+        settings.breathGainDb = parameter(QQDeBreath::ParamIDs::breathGainDb);
+        settings.globalEq = audioProcessor.getBreathEqState();
+        if (sourceMode == SourceMode::ara)
+        {
+            // Export uses the already loaded local wav. Never access ARA host objects on a worker.
+            juce::AudioFormatManager formats;
+            formats.registerBasicFormats();
+            request.reader.reset(formats.createReaderFor(araSourceInfo.exportedWav));
+            if (!request.reader)
+            {
+                exportStatus = "No readable loaded ARA source wav. Load the source again before exporting.";
+                updateExportStatus();
+                return;
+            }
+        }
+        else if (!audioProcessor.copyRecordedBuffer(request.source, request.sampleRate))
+        {
+            exportStatus = "No recorded buffer is available for stem export.";
+            updateExportStatus();
+            return;
+        }
+        exportJob = std::make_unique<QQDeBreathStemExport::Job>(std::move(request));
+        if (!exportJob->startThread())
+        {
+            exportJob.reset();
+            exportStatus = "Could not start stem export.";
+        }
     }
-
-    updateRecordingInfo();
-    juce::String status;
-    renderCurrentStemsToDirectory(directory, status);
-    statusLabel.setText("Status: " + status, juce::dontSendNotification);
+    catch (const std::exception& error) { exportStatus = "Could not start export: " + juce::String(error.what()); }
+    updateExportStatus();
 }
 
-bool QQDeBreathAudioProcessorEditor::renderCurrentStemsToDirectory(const juce::File& directory, juce::String& status)
+void QQDeBreathAudioProcessorEditor::updateExportStatus()
 {
-    auto result = audioProcessor.getAnalysisResult();
-    if (! result.succeeded)
+    if (exportJob != nullptr && exportJob->finished())
     {
-        status = "Analyze first to export Vocal Only/Breath/Noize stems.";
-        return false;
+        exportStatus = exportJob->status;
+        exportStatusUntilMs = 0;
+        exportJob.reset();
     }
-
-    juce::AudioBuffer<float> source;
-    double sampleRate = 0.0;
-
-    if (sourceMode == SourceMode::ara)
+    exportButton.setButtonText(exportJob != nullptr ? (exportJob->threadShouldExit() ? "Cancelling..." : "Cancel Export") : "Export Stems");
+    if (exportJob != nullptr)
+        statusLabel.setText("Status: Exporting stems... " + juce::String(juce::roundToInt(exportJob->getProgress() * 100.0f)) + "%",
+                            juce::dontSendNotification);
+    else if (exportStatus.isNotEmpty())
     {
-        if (! araSourceInfo.exportedWav.existsAsFile())
+        const auto now = juce::Time::getMillisecondCounter();
+        if (exportStatusUntilMs == 0) exportStatusUntilMs = now + 8000u;
+        if (static_cast<int32_t>(exportStatusUntilMs - now) > 0)
+            statusLabel.setText("Status: " + exportStatus, juce::dontSendNotification);
+        else
         {
-            if (auto* sourceObject = findCurrentAudioSource())
-                exportAraSourceToWav(*sourceObject, araSourceInfo);
-        }
-
-        if (! araSourceInfo.exportedWav.existsAsFile())
-        {
-            status = "No ARA source wav is available for stem export.";
-            return false;
-        }
-
-        if (! readAudioFile(araSourceInfo.exportedWav, source, sampleRate, status))
-            return false;
-    }
-    else
-    {
-        if (! audioProcessor.copyRecordedBuffer(source, sampleRate))
-        {
-            status = "No recorded buffer is available for stem export.";
-            return false;
+            exportStatus.clear();
+            exportStatusUntilMs = 0;
         }
     }
-
-    if (source.getNumSamples() <= 0 || source.getNumChannels() <= 0 || sampleRate <= 0.0)
-    {
-        status = "Source audio is empty.";
-        return false;
-    }
-
-    juce::AudioBuffer<float> vocalOnly(source.getNumChannels(), source.getNumSamples());
-    juce::AudioBuffer<float> breath(source.getNumChannels(), source.getNumSamples());
-    juce::AudioBuffer<float> noize(source.getNumChannels(), source.getNumSamples());
-    vocalOnly.clear();
-    breath.clear();
-    noize.clear();
-
-    const auto enableFade = audioProcessor.parameters.getRawParameterValue(QQDeBreath::ParamIDs::enableFade)->load() >= 0.5f;
-    const auto normalizeBreath = audioProcessor.parameters.getRawParameterValue(QQDeBreath::ParamIDs::normalizeBreath)->load() >= 0.5f;
-    const auto breathTargetDb = static_cast<double>(audioProcessor.parameters.getRawParameterValue(QQDeBreath::ParamIDs::breathTargetDb)->load());
-    const auto breathTargetGain = dbToGain(breathTargetDb);
-    const auto breathAdjustGain = dbToGain(juce::jlimit(-60.0, 30.0, static_cast<double>(audioProcessor.parameters.getRawParameterValue(QQDeBreath::ParamIDs::breathGainDb)->load())));
-    const auto fadeInSamples = enableFade
-                             ? static_cast<int>(std::llround(audioProcessor.parameters.getRawParameterValue(QQDeBreath::ParamIDs::fadeInMs)->load() * sampleRate / 1000.0))
-                             : 0;
-    const auto fadeOutSamples = enableFade
-                              ? static_cast<int>(std::llround(audioProcessor.parameters.getRawParameterValue(QQDeBreath::ParamIDs::fadeOutMs)->load() * sampleRate / 1000.0))
-                              : 0;
-
-    juce::Array<double> breathPeakCache;
-    for (const auto& region : result.regions)
-    {
-        auto peak = 0.0f;
-        if (! region.type.equalsIgnoreCase("Noize"))
-        {
-            const auto start = regionStartSample(region, sampleRate, source.getNumSamples());
-            const auto end = regionEndSample(region, sampleRate, source.getNumSamples());
-            for (auto channel = 0; channel < source.getNumChannels(); ++channel)
-            {
-                const auto* data = source.getReadPointer(channel);
-                for (auto sample = start; sample < end; ++sample)
-                    peak = juce::jmax(peak, std::abs(data[static_cast<int>(sample)]));
-            }
-        }
-        breathPeakCache.add(static_cast<double>(peak));
-    }
-
-    for (auto sample = 0; sample < source.getNumSamples(); ++sample)
-    {
-        double breathWeight = 0.0;
-        double noizeWeight = 0.0;
-        double breathNormGain = 1.0;
-        double regionGain = 1.0;
-
-        for (auto regionIndex = 0; regionIndex < result.regions.size(); ++regionIndex)
-        {
-            const auto& region = result.regions.getReference(regionIndex);
-            const auto weight = regionWeightForIndex(result.regions,
-                                                     regionIndex,
-                                                     sample,
-                                                     sampleRate,
-                                                     source.getNumSamples(),
-                                                     fadeInSamples,
-                                                     fadeOutSamples);
-            if (weight <= 0.0)
-                continue;
-
-            if (region.type.equalsIgnoreCase("Noize"))
-            {
-                noizeWeight = juce::jmax(noizeWeight, weight);
-            }
-            else if (weight >= breathWeight)
-            {
-                breathWeight = weight;
-                regionGain = dbToGain(juce::jlimit(-30.0, 30.0, region.gainDb));
-                if (normalizeBreath)
-                {
-                    const auto peak = regionIndex < breathPeakCache.size()
-                                    ? breathPeakCache.getReference(regionIndex)
-                                    : 0.0;
-                    breathNormGain = peak > 1.0e-9 ? breathTargetGain / peak : 1.0;
-                }
-            }
-        }
-
-        const auto nonVoiceSum = breathWeight + noizeWeight;
-        if (nonVoiceSum > 1.0)
-        {
-            breathWeight /= nonVoiceSum;
-            noizeWeight /= nonVoiceSum;
-        }
-
-        const auto voiceWeight = juce::jlimit(0.0, 1.0, 1.0 - breathWeight - noizeWeight);
-
-        for (auto channel = 0; channel < source.getNumChannels(); ++channel)
-        {
-            const auto dry = static_cast<double>(sampleAt(source, channel, sample));
-            vocalOnly.setSample(channel, sample, static_cast<float>(dry * voiceWeight));
-            breath.setSample(channel, sample, static_cast<float>(dry * breathWeight * breathNormGain * breathAdjustGain * regionGain));
-            noize.setSample(channel, sample, static_cast<float>(dry * noizeWeight));
-        }
-    }
-
-    audioProcessor.applyBreathEqToBuffer(breath, sampleRate);
-
-    for (auto regionIndex = 0; regionIndex < result.regions.size(); ++regionIndex)
-    {
-        const auto& region = result.regions.getReference(regionIndex);
-        if (region.type.equalsIgnoreCase("Noize") || ! region.eqState.hasActiveProcessing())
-            continue;
-
-        const auto start = juce::jmax<juce::int64>(0, regionStartSample(region, sampleRate, source.getNumSamples()) - fadeInSamples);
-        const auto end = juce::jmin<juce::int64>(source.getNumSamples(), regionEndSample(region, sampleRate, source.getNumSamples()) + fadeOutSamples);
-        if (end <= start)
-            continue;
-
-        juce::AudioBuffer<float> regionBreath(source.getNumChannels(), static_cast<int>(end - start));
-        regionBreath.clear();
-
-        const auto peak = regionIndex < breathPeakCache.size() ? breathPeakCache.getReference(regionIndex) : 0.0;
-        const auto normGain = normalizeBreath && peak > 1.0e-9 ? breathTargetGain / peak : 1.0;
-        const auto regionGain = dbToGain(juce::jlimit(-30.0, 30.0, region.gainDb));
-
-        for (auto sample = start; sample < end; ++sample)
-        {
-            const auto weight = regionWeightForIndex(result.regions,
-                                                     regionIndex,
-                                                     sample,
-                                                     sampleRate,
-                                                     source.getNumSamples(),
-                                                     fadeInSamples,
-                                                     fadeOutSamples);
-            if (weight <= 0.0)
-                continue;
-
-            const auto destSample = static_cast<int>(sample - start);
-            for (auto channel = 0; channel < source.getNumChannels(); ++channel)
-            {
-                const auto dry = static_cast<double>(sampleAt(source, channel, sample));
-                regionBreath.setSample(channel,
-                                       destSample,
-                                       static_cast<float>(dry * weight * normGain * breathAdjustGain * regionGain));
-            }
-        }
-
-        audioProcessor.applyBreathEqToBuffer(regionBreath, sampleRate);
-        QQDeBreathEqProcessor regionProcessor;
-        regionProcessor.prepare(sampleRate, regionBreath.getNumChannels(), region.eqState);
-        regionProcessor.process(regionBreath);
-
-        for (auto channel = 0; channel < breath.getNumChannels(); ++channel)
-        {
-            breath.clear(channel, static_cast<int>(start), regionBreath.getNumSamples());
-            breath.addFrom(channel, static_cast<int>(start), regionBreath, channel, 0, regionBreath.getNumSamples());
-        }
-    }
-
-    if (! writeWavFile(directory.getChildFile("Vocal Only.wav"), vocalOnly, sampleRate, status))
-        return false;
-    if (! writeWavFile(directory.getChildFile("Breath.wav"), breath, sampleRate, status))
-        return false;
-    if (! writeWavFile(directory.getChildFile("Noize.wav"), noize, sampleRate, status))
-        return false;
-
-    status = "Exported Vocal Only.wav, Breath.wav, and Noize.wav with current Fade/Norm/Global Gain/EQ.";
-    return true;
 }
 
 void QQDeBreathAudioProcessorEditor::updateAnalysisInfo()

@@ -12,7 +12,31 @@
 
 # QQDeBreath ARA / VST3 / AU
 
-当前稳定版本 / Current stable version: **1.23 Stable**（用户验收通过 / user verified）
+当前稳定版本 / Current stable version: **1.25 Stable**（用户验收通过 / user verified）
+
+1.25 已由用户验收并指定 Stable；本次同步 1.24 与 1.25 的完整更新记录。 / The user accepted 1.25 and designated it Stable; this update includes the complete 1.24 and 1.25 history.
+
+## 1.25 Stable — 2026-09-22 / Parameter and Auto Apply responsiveness
+
+中文：优化 Gain、Norm Target 及全局/区域 EQ Auto Apply 的拖动响应。Gain/Norm Target 通过缩放处理后波形缓存更新显示，不再重复扫描和处理整段音频。EQ 波形计算移至只保留最新请求的后台线程；拖动时保留上一份完整波形，最新计算完成后更新。试听参数仍独立更新。缓存区域峰值、用区间索引绘制波形，并将动态频谱限制到当前窗口涉及的区域；拖动不再触发无关的全文件静态频谱计算。连续区域 EQ 拖动的 ARA 更新采用限频而非不断推迟。Auto Apply 关闭时的预览/Apply 规则不变。
+
+English: Improved Gain, Norm Target and global/selected EQ Auto Apply responsiveness. Gain/Target scale cached display data without rescanning or reprocessing the source. EQ waveform rendering uses a background worker with latest-request cancellation, keeping the last complete display until the newest result is ready. Audition parameters update independently. Region peaks are cached, painting uses an interval index, and dynamic spectra consider only regions overlapping the current window. Dragging no longer triggers unrelated whole-file static spectra. Continuous selected EQ edits throttle ARA updates instead of indefinitely postponing them. Manual preview/Apply behavior is preserved.
+
+Scope: display/editor only; audio processor, EQ DSP, analysis and 1.24 stem-export implementation remain unchanged. No new audio-parameter smoothing algorithm is introduced. Waveform updates may lag behind EQ dragging by design. Gain/Target cache scaling can differ from the previous display by float rounding; it does not change playback or exported audio. Original playback synchronization and fixed Export Stems behavior are retained.
+
+Status: Stable, explicitly designated by the user on 2026-09-22 after accepting 1.25 responsiveness. Windows validation is inherited unchanged; no new macOS acceptance is claimed.
+
+
+
+## 1.24 Candidate — 2026-09-22 / Export Stems
+
+中文：修复 Export Stems 在界面线程重复遍历整段音频和全部区域造成的长时间无响应。区域边界、相邻关系、峰值及增益按快照预计算，仅处理有效范围；保留 1.23 的重叠区域优先级及 Fade/Norm/Gain/全局和区域 EQ 规则。三轨渲染、已加载 ARA 本地 WAV 读取及文件写入在可取消后台任务中执行，显示进度。导出使用开始时的数据与设置，后续编辑不改变正在导出的内容。完成三轨临时写入后才替换目标文件；取消保留原文件。关闭编辑器会取消并等待任务安全退出。普通 VST3 播放定位与 ARA 播放路径未修改。
+
+English: Fixed excessive synchronous work in Export Stems. Region boundaries, adjacency, peaks and gains are cached for the export snapshot, with rendering restricted to relevant ranges. The 1.23 overlap priority and Fade/Norm/Gain/global and per-region EQ semantics are preserved. Rendering, loaded ARA local-WAV reads and file writing run in a cancellable worker with progress. Later edits do not change the captured export. All three temporary WAVs are written before replacing targets; cancellation preserves existing stems. Closing the editor cancels and joins the worker safely. Ordinary VST3 transport and ARA playback paths are unchanged.
+
+状态：1.24 为中间候选版，用户已确认导出问题解决；未单独指定 Stable，后续并入 1.25 Stable。 / Status: intermediate candidate; the user confirmed the export fix. It was not separately designated Stable and is included in 1.25 Stable.
+
+
 
 
 
@@ -40,8 +64,8 @@ Windows users need the Windows x64 VST3. For Mac VST3 choose one matching host a
 **GitHub's automatic Source code (zip) / Source code (tar.gz) downloads are source snapshots, not installable plug-ins.**
 需要复现构建时使用 Complete-Source.zip，它同时包含 ARA SDK 和 JUCE；安装插件请使用相应平台 ZIP。For rebuilding, use Complete-Source.zip with its ARA SDK and JUCE; for installation, use the platform ZIP.
 
-恢复的两份图文手册是原有“独立版 1.11 / VST3-ARA 1.20”合订版，内容未修改。普通 VST3 请看第 3–5 页，ARA 请看第 6 页；第 1–2 页的独立应用不包含在本发行中。1.23 的播放同步变化见当前安装说明和下方版本记录。
-The restored illustrated manuals retain their original Standalone 1.11 / VST3-ARA 1.20 edition. Read pages 3–5 for ordinary VST3 and page 6 for ARA. The standalone application discussed on pages 1–2 is not included here. Use the current installation guide and version notes for 1.23 transport changes.
+恢复的两份图文手册是原有“独立版 1.11 / VST3-ARA 1.20”合订版，内容未修改。普通 VST3 请看第 3–5 页，ARA 请看第 6 页；第 1–2 页的独立应用不包含在本发行中。1.23 的播放同步以及 1.24/1.25 的导出与流畅性变化见当前安装说明和下方版本记录。
+The restored illustrated manuals retain their original Standalone 1.11 / VST3-ARA 1.20 edition. Read pages 3–5 for ordinary VST3 and page 6 for ARA. The standalone application discussed on pages 1–2 is not included here. Use the current installation guide and version notes for 1.23 transport and 1.24/1.25 export/responsiveness changes.
 
 ## 1.23 更新 / What's new in 1.23
 

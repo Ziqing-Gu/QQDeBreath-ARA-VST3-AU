@@ -1,0 +1,7 @@
+QQDeBreath ARA/VST3/AU 1.25 Stable
+Internal version: 1.0.25
+Date: 2026-09-22
+Baseline/rollback: 1.24 (export accepted); previous designated Stable: 1.23
+Gain/Norm Target cached scaling; latest-only background EQ waveform; cached peaks and indexed display/spectrum.
+Windows x64 VST3 built. Waveform regression: 24 cases at 44.1/48/96 kHz, each checking three scalar settings plus global and selected EQ; maximum relative display error 1.63409e-7. Scalar changes enqueue zero full renders. Latest EQ wins, same-length source replacement/clear and worker close passed. Synthetic 120-second/500-region test: 1000 scalar updates 125.27 ms; 500 EQ submissions 142.042 ms; paint 11.2246 ms. These measure internal display entry points, not real DAW end-to-end latency. 1.24 stem-export, editor-state and transport regressions and Steinberg load check passed. Audio processor, EQ DSP and stem-export source hashes unchanged.
+User accepted and designated Stable on 2026-09-22; Plan B completed without binary changes.

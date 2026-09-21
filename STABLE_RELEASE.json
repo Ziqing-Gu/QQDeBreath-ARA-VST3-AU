@@ -1,20 +1,23 @@
 {
-  "product": "QQDeBreath",
-  "version": "1.23",
-  "internalVersion": "1.0.23",
+  "product": "QQDeBreath ARA/VST3/AU",
+  "version": "1.25",
+  "internalVersion": "1.0.25",
   "status": "Stable",
-  "confirmedAt": "2026-09-20T00:04:51+08:00",
-  "confirmationSource": "User confirmed this version works correctly and requested Stable + Plan B",
-  "validatedScope": "Windows VST3 waveform audition, starting from a stopped selection, and DAW relocation alignment",
+  "previousDesignatedStable": "1.23",
+  "confirmedAt": "2026-09-22T07:18:14.692337+08:00",
+  "confirmationSource": "User: 效果不错。设为Stable。执行Plan B。",
   "binaryChangedForStableMarking": false,
-  "pluginFiles": {
-    "Contents/Resources/moduleinfo.json": {
+  "pluginFiles": [
+    {
+      "path": "Contents/Resources/moduleinfo.json",
       "bytes": 1421,
-      "sha256": "fc9ae28c5b28dca9d5da6c241afcbaef1697670c52bce061bc06e788280d8948"
+      "sha256": "c095b705da3235822748f6f4c6126c45ec60274d38b12b2204ff22271728718d"
     },
-    "Contents/x86_64-win/QQDeBreath.vst3": {
-      "bytes": 7434240,
-      "sha256": "948ab012801d3de05eb91e3ca618aaa6aca4259f91d479139e942ec901e999d3"
+    {
+      "path": "Contents/x86_64-win/QQDeBreath.vst3",
+      "bytes": 7464960,
+      "sha256": "93f7ccdd17b8e8759c934bbce19110d5d0cad8fad54bec7c6f0826ed9548eb73"
     }
-  }
+  ],
+  "scope": "User accepted Gain/Norm Target and EQ Auto Apply responsiveness after 1.25 install; Export Stems fix accepted in 1.24."
 }

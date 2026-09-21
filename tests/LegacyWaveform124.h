@@ -1,14 +1,12 @@
-﻿#pragma once
+// Frozen 1.24 UI display reference; tests only.
+#pragma once
 
 #include <juce_audio_utils/juce_audio_utils.h>
 
 #include "shared/BridgeAnalysis.h"
-#include "WaveformDisplayRender.h"
-#include <map>
 
-class QQDeBreathWaveformEditor final : public juce::Component,
-                                       private juce::ScrollBar::Listener,
-                                       private juce::Timer
+class LegacyWaveform124 final : public juce::Component,
+                                       private juce::ScrollBar::Listener
 {
 public:
     struct DisplayProcessingParams
@@ -22,8 +20,7 @@ public:
         QQDeBreathEqState breathEqState;
     };
 
-    QQDeBreathWaveformEditor();
-    ~QQDeBreathWaveformEditor() override;
+    LegacyWaveform124();
 
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -66,9 +63,6 @@ public:
 
 private:
     friend class QQDeBreathWaveformDisplayProbe;
-    void timerCallback() override;
-    void invalidateSourceDisplay();
-    double cachedRegionPeak(const QQDeBreathBridgeRegion&) const;
     enum class DragMode
     {
         none,
@@ -130,14 +124,6 @@ private:
     juce::Array<double> breathNormGainCache;
     juce::Array<DisplayRegion> displayRegions;
     juce::AudioBuffer<float> processedBreathDisplay;
-    juce::AudioBuffer<float> processedFixedBreathDisplay;
-    bool processedDisplayNormalised = false;
-    uint64_t regionDisplayRevision = 0, displayRequestedRevision = 0, displayAppliedRevision = 0;
-    double displayGain = 1.0, displayNormTarget = 0.5011872336272722;
-    std::vector<juce::int64> displayPrefixEnds;
-    mutable std::map<std::pair<juce::int64, juce::int64>, double> regionPeakMemo;
-    std::shared_ptr<const juce::AudioBuffer<float>> displaySource;
-    QQDeBreathWaveformDisplay::Worker displayWorker;
     juce::String processedBreathDisplayKey;
     int selectedRegion = -1;
     double viewStart = 0.0;
@@ -163,5 +149,5 @@ private:
     int resizeRegion = -1;
     bool deferredRegionDisplayRebuild = false;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(QQDeBreathWaveformEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LegacyWaveform124)
 };

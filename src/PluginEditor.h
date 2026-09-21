@@ -1,8 +1,9 @@
-#pragma once
+﻿#pragma once
 
 #include <juce_gui_extra/juce_gui_extra.h>
 
 #include "PluginProcessor.h"
+#include "shared/StemExport.h"
 #include "shared/BreathEqComponent.h"
 #include "shared/WaveformEditorComponent.h"
 
@@ -237,7 +238,7 @@ private:
     void waveformRegionsChanged(const juce::Array<QQDeBreathBridgeRegion>& regions);
     void waveformSeekRequested(double localSeconds);
     void exportToDirectory(const juce::File& directory);
-    bool renderCurrentStemsToDirectory(const juce::File& directory, juce::String& status);
+    void updateExportStatus();
     static juce::String buildAraSourceFingerprint(const juce::ARAAudioSource& source);
     static juce::String makeAraSourceName(const juce::ARAAudioSource& source);
     static juce::File getAraExportDirectory();
@@ -349,10 +350,14 @@ private:
     juce::String breathEqSpectrumSourceKey;
     double breathEqSpectrumSampleRate = 0.0;
     juce::AudioBuffer<float> breathEqSpectrumSourceBuffer;
+    std::map<std::pair<juce::int64, juce::int64>, double> breathEqSpectrumPeakMemo;
     std::vector<float> globalPreSpectrumPeak;
     std::vector<float> globalPostSpectrumPeak;
     std::vector<float> detailPreSpectrumPeak;
     std::vector<float> detailPostSpectrumPeak;
+    std::unique_ptr<QQDeBreathStemExport::Job> exportJob;
+    juce::String exportStatus;
+    uint32_t exportStatusUntilMs = 0;
     std::unique_ptr<AnalysisThread> analysisThread;
     std::unique_ptr<juce::FileChooser> fileChooser;
     std::unique_ptr<ButtonAttachment> monitorVoiceAttachment;

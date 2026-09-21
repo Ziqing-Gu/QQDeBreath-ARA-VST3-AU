@@ -1,7 +1,7 @@
-﻿#include "WaveformEditorComponent.h"
+// Frozen 1.24 UI display reference; tests only.
+#include "LegacyWaveform124.h"
 
 #include <cmath>
-#include <algorithm>
 
 namespace
 {
@@ -21,60 +21,15 @@ bool sameRegionTime(const QQDeBreathBridgeRegion& a, const QQDeBreathBridgeRegio
 }
 } // namespace
 
-QQDeBreathWaveformEditor::QQDeBreathWaveformEditor()
+LegacyWaveform124::LegacyWaveform124()
 {
     formatManager.registerBasicFormats();
     setWantsKeyboardFocus(true);
     horizontalScrollBar.addListener(this);
     addAndMakeVisible(horizontalScrollBar);
-    startTimerHz(30);
 }
 
-QQDeBreathWaveformEditor::~QQDeBreathWaveformEditor()
-{
-    stopTimer();
-    displayWorker.cancel();
-}
-
-void QQDeBreathWaveformEditor::invalidateSourceDisplay()
-{
-    displayWorker.cancel();
-    regionPeakMemo.clear();
-    processedBreathDisplayKey.clear();
-    processedBreathDisplay.setSize(0, 0);
-    processedFixedBreathDisplay.setSize(0, 0);
-    if (monoWaveform.getNumSamples() > 0)
-    {
-        auto snapshot = std::make_shared<juce::AudioBuffer<float>>();
-        snapshot->makeCopyOf(monoWaveform);
-        displaySource = std::move(snapshot);
-    }
-    else displaySource.reset();
-}
-
-void QQDeBreathWaveformEditor::timerCallback()
-{
-    if (auto ready = displayWorker.takeResult())
-    {
-        displayAppliedRevision = ready->revision;
-        processedBreathDisplay = std::move(ready->scalable);
-        processedFixedBreathDisplay = std::move(ready->fixed);
-        processedDisplayNormalised = ready->normalised;
-        repaint();
-    }
-}
-
-double QQDeBreathWaveformEditor::cachedRegionPeak(const QQDeBreathBridgeRegion& region) const
-{
-    const auto start = regionStartSample(region), end = regionEndSample(region);
-    const auto key = std::make_pair(start, end);
-    if (const auto found = regionPeakMemo.find(key); found != regionPeakMemo.end()) return found->second;
-    const auto peak = end > start ? static_cast<double>(monoWaveform.getMagnitude(0, static_cast<int>(start), static_cast<int>(end - start))) : 0.0;
-    regionPeakMemo.emplace(key, peak);
-    return peak;
-}
-
-bool QQDeBreathWaveformEditor::loadAudioFile(const juce::File& file, juce::String& status)
+bool LegacyWaveform124::loadAudioFile(const juce::File& file, juce::String& status)
 {
     if (! file.existsAsFile())
     {
@@ -102,7 +57,6 @@ bool QQDeBreathWaveformEditor::loadAudioFile(const juce::File& file, juce::Strin
         monoWaveform.addFrom(0, 0, temp, channel, 0, temp.getNumSamples(), 1.0f / juce::jmax(1, temp.getNumChannels()));
 
     sampleRate = reader->sampleRate;
-    invalidateSourceDisplay();
     timelineDuration = getDurationSeconds();
     playhead = 0.0;
     rebuildBreathNormGainCache();
@@ -113,7 +67,7 @@ bool QQDeBreathWaveformEditor::loadAudioFile(const juce::File& file, juce::Strin
     return true;
 }
 
-void QQDeBreathWaveformEditor::setAudioBuffer(const juce::AudioBuffer<float>& audio,
+void LegacyWaveform124::setAudioBuffer(const juce::AudioBuffer<float>& audio,
                                               double sourceSampleRate,
                                               double timelineDurationSeconds,
                                               bool preserveView)
@@ -129,7 +83,6 @@ void QQDeBreathWaveformEditor::setAudioBuffer(const juce::AudioBuffer<float>& au
     for (auto channel = 0; channel < audio.getNumChannels(); ++channel)
         monoWaveform.addFrom(0, 0, audio, channel, 0, audio.getNumSamples(), 1.0f / juce::jmax(1, audio.getNumChannels()));
 
-    invalidateSourceDisplay();
     timelineDuration = juce::jmax(getDurationSeconds(), timelineDurationSeconds);
     rebuildBreathNormGainCache();
 
@@ -142,12 +95,11 @@ void QQDeBreathWaveformEditor::setAudioBuffer(const juce::AudioBuffer<float>& au
     repaint();
 }
 
-void QQDeBreathWaveformEditor::clearAudio()
+void LegacyWaveform124::clearAudio()
 {
     recordingOverlay = false;
     recordingOverlayText.clear();
     monoWaveform.setSize(0, 0);
-    invalidateSourceDisplay();
     sampleRate = 0.0;
     timelineDuration = 0.0;
     viewStart = 0.0;
@@ -164,7 +116,7 @@ void QQDeBreathWaveformEditor::clearAudio()
     repaint();
 }
 
-void QQDeBreathWaveformEditor::setAnalysisResult(const QQDeBreathBridgeAnalysisResult& result)
+void LegacyWaveform124::setAnalysisResult(const QQDeBreathBridgeAnalysisResult& result)
 {
     regions = result.regions;
     selectedRegion = -1;
@@ -174,7 +126,7 @@ void QQDeBreathWaveformEditor::setAnalysisResult(const QQDeBreathBridgeAnalysisR
     repaint();
 }
 
-void QQDeBreathWaveformEditor::clearRegions()
+void LegacyWaveform124::clearRegions()
 {
     if (! regions.isEmpty())
         pushUndoState();
@@ -185,7 +137,7 @@ void QQDeBreathWaveformEditor::clearRegions()
     repaint();
 }
 
-QQDeBreathBridgeRegion QQDeBreathWaveformEditor::getRegion(int index) const
+QQDeBreathBridgeRegion LegacyWaveform124::getRegion(int index) const
 {
     if (index >= 0 && index < regions.size())
         return regions.getReference(index);
@@ -193,7 +145,7 @@ QQDeBreathBridgeRegion QQDeBreathWaveformEditor::getRegion(int index) const
     return {};
 }
 
-juce::Array<double> QQDeBreathWaveformEditor::buildRegionPeakCache(
+juce::Array<double> LegacyWaveform124::buildRegionPeakCache(
     const juce::Array<QQDeBreathBridgeRegion>& regionsToMeasure) const
 {
     juce::Array<double> peaks;
@@ -207,18 +159,25 @@ juce::Array<double> QQDeBreathWaveformEditor::buildRegionPeakCache(
     }
 
     for (const auto& region : regionsToMeasure)
-        peaks.add(cachedRegionPeak(region));
+    {
+        const auto start = regionStartSample(region);
+        const auto end = regionEndSample(region);
+        const auto length = static_cast<int>(juce::jmax<juce::int64>(0, end - start));
+        const auto peak = length > 0
+                        ? monoWaveform.getMagnitude(0, static_cast<int>(start), length)
+                        : 0.0f;
+        peaks.add(static_cast<double>(peak));
+    }
 
     return peaks;
 }
 
-void QQDeBreathWaveformEditor::setRegionProcessing(int index, double gainDb, const QQDeBreathEqState& eqState, bool notifyChange, bool shouldRebuildDisplay)
+void LegacyWaveform124::setRegionProcessing(int index, double gainDb, const QQDeBreathEqState& eqState, bool notifyChange, bool shouldRebuildDisplay)
 {
     if (index < 0 || index >= regions.size())
         return;
 
     auto& region = regions.getReference(index);
-    ++regionDisplayRevision;
     if (region.type.equalsIgnoreCase("Noize"))
         return;
 
@@ -235,7 +194,7 @@ void QQDeBreathWaveformEditor::setRegionProcessing(int index, double gainDb, con
     repaint();
 }
 
-double QQDeBreathWaveformEditor::getDurationSeconds() const
+double LegacyWaveform124::getDurationSeconds() const
 {
     if (sampleRate <= 0.0 || monoWaveform.getNumSamples() <= 0)
         return 0.0;
@@ -243,22 +202,22 @@ double QQDeBreathWaveformEditor::getDurationSeconds() const
     return static_cast<double>(monoWaveform.getNumSamples()) / sampleRate;
 }
 
-double QQDeBreathWaveformEditor::getTimelineDurationSeconds() const
+double LegacyWaveform124::getTimelineDurationSeconds() const
 {
     return juce::jmax(getDurationSeconds(), timelineDuration);
 }
 
-bool QQDeBreathWaveformEditor::canUndo() const
+bool LegacyWaveform124::canUndo() const
 {
     return ! undoStack.isEmpty();
 }
 
-bool QQDeBreathWaveformEditor::canRedo() const
+bool LegacyWaveform124::canRedo() const
 {
     return ! redoStack.isEmpty();
 }
 
-void QQDeBreathWaveformEditor::undo()
+void LegacyWaveform124::undo()
 {
     if (undoStack.isEmpty())
         return;
@@ -272,7 +231,7 @@ void QQDeBreathWaveformEditor::undo()
     repaint();
 }
 
-void QQDeBreathWaveformEditor::redo()
+void LegacyWaveform124::redo()
 {
     if (redoStack.isEmpty())
         return;
@@ -286,7 +245,7 @@ void QQDeBreathWaveformEditor::redo()
     repaint();
 }
 
-void QQDeBreathWaveformEditor::setTimelineDurationSeconds(double seconds)
+void LegacyWaveform124::setTimelineDurationSeconds(double seconds)
 {
     timelineDuration = juce::jmax(getDurationSeconds(), seconds);
     if (followPlayhead && playhead > viewEnd)
@@ -298,7 +257,7 @@ void QQDeBreathWaveformEditor::setTimelineDurationSeconds(double seconds)
     repaint();
 }
 
-void QQDeBreathWaveformEditor::setPlayheadSeconds(double seconds)
+void LegacyWaveform124::setPlayheadSeconds(double seconds)
 {
     const auto previousPlayhead = playhead;
     const auto wasVisible = previousPlayhead >= viewStart && previousPlayhead <= viewEnd;
@@ -317,13 +276,13 @@ void QQDeBreathWaveformEditor::setPlayheadSeconds(double seconds)
         repaint();
 }
 
-void QQDeBreathWaveformEditor::setWaveformDisplayGain(double gain)
+void LegacyWaveform124::setWaveformDisplayGain(double gain)
 {
     waveformDisplayGain = juce::jlimit(0.25, 8.0, gain);
     repaint();
 }
 
-void QQDeBreathWaveformEditor::setFollowPlayhead(bool shouldFollow)
+void LegacyWaveform124::setFollowPlayhead(bool shouldFollow)
 {
     if (followPlayhead == shouldFollow)
         return;
@@ -339,7 +298,7 @@ void QQDeBreathWaveformEditor::setFollowPlayhead(bool shouldFollow)
     repaint();
 }
 
-void QQDeBreathWaveformEditor::setRecordingOverlay(bool shouldShow, const juce::String& text)
+void LegacyWaveform124::setRecordingOverlay(bool shouldShow, const juce::String& text)
 {
     if (recordingOverlay == shouldShow && recordingOverlayText == text)
         return;
@@ -350,7 +309,7 @@ void QQDeBreathWaveformEditor::setRecordingOverlay(bool shouldShow, const juce::
     repaint();
 }
 
-void QQDeBreathWaveformEditor::setMonitorState(bool voiceEnabled, bool breathEnabled, bool noizeEnabled)
+void LegacyWaveform124::setMonitorState(bool voiceEnabled, bool breathEnabled, bool noizeEnabled)
 {
     if (monitorVoice == voiceEnabled && monitorBreath == breathEnabled && monitorNoize == noizeEnabled)
         return;
@@ -361,29 +320,31 @@ void QQDeBreathWaveformEditor::setMonitorState(bool voiceEnabled, bool breathEna
     repaint();
 }
 
-void QQDeBreathWaveformEditor::setProcessingParams(const DisplayProcessingParams& params)
+void LegacyWaveform124::setProcessingParams(const DisplayProcessingParams& params)
 {
-    const auto normChanged = processingParams.normalizeBreath != params.normalizeBreath;
+    const auto normChanged = processingParams.normalizeBreath != params.normalizeBreath
+                          || std::abs(processingParams.breathTargetDb - params.breathTargetDb) > 1.0e-6;
     const auto eqChanged = serializeBreathEqState(processingParams.breathEqState) != serializeBreathEqState(params.breathEqState);
     const auto fadeChanged = processingParams.enableFade != params.enableFade
                           || std::abs(processingParams.fadeInMs - params.fadeInMs) > 1.0e-6
                           || std::abs(processingParams.fadeOutMs - params.fadeOutMs) > 1.0e-6;
+    const auto breathGainChanged = std::abs(processingParams.breathGainDb - params.breathGainDb) > 1.0e-6;
     processingParams = params;
-    displayGain = dbToGain(params.breathGainDb);
-    displayNormTarget = dbToGain(params.breathTargetDb);
-    if (fadeChanged) rebuildBreathNormGainCache();
-    else if (normChanged || eqChanged) rebuildProcessedBreathDisplay();
+
+    if (normChanged || fadeChanged || breathGainChanged || eqChanged)
+        rebuildBreathNormGainCache();
 
     repaint();
 }
 
-void QQDeBreathWaveformEditor::refreshProcessedDisplay()
+void LegacyWaveform124::refreshProcessedDisplay()
 {
-    rebuildProcessedBreathDisplay();
+    processedBreathDisplayKey.clear();
+    rebuildBreathNormGainCache();
     repaint();
 }
 
-void QQDeBreathWaveformEditor::paint(juce::Graphics& g)
+void LegacyWaveform124::paint(juce::Graphics& g)
 {
     const auto bounds = getLocalBounds().toFloat();
     g.fillAll(juce::Colour(0xff07111f));
@@ -527,14 +488,14 @@ void QQDeBreathWaveformEditor::paint(juce::Graphics& g)
     g.drawText(juce::String(viewEnd, 2) + "s", area, juce::Justification::bottomRight);
 }
 
-void QQDeBreathWaveformEditor::resized()
+void LegacyWaveform124::resized()
 {
     auto area = getLocalBounds().reduced(10);
     horizontalScrollBar.setBounds(area.removeFromBottom(14));
     updateScrollBar();
 }
 
-void QQDeBreathWaveformEditor::mouseDown(const juce::MouseEvent& event)
+void LegacyWaveform124::mouseDown(const juce::MouseEvent& event)
 {
     grabKeyboardFocus();
 
@@ -599,12 +560,12 @@ void QQDeBreathWaveformEditor::mouseDown(const juce::MouseEvent& event)
     }
 }
 
-void QQDeBreathWaveformEditor::mouseMove(const juce::MouseEvent& event)
+void LegacyWaveform124::mouseMove(const juce::MouseEvent& event)
 {
     updateMouseCursor(event.x);
 }
 
-void QQDeBreathWaveformEditor::mouseDrag(const juce::MouseEvent& event)
+void LegacyWaveform124::mouseDrag(const juce::MouseEvent& event)
 {
     if (dragMode == DragMode::create)
     {
@@ -661,7 +622,7 @@ void QQDeBreathWaveformEditor::mouseDrag(const juce::MouseEvent& event)
     }
 }
 
-void QQDeBreathWaveformEditor::mouseUp(const juce::MouseEvent& /*event*/)
+void LegacyWaveform124::mouseUp(const juce::MouseEvent& /*event*/)
 {
     if (dragMode == DragMode::create)
     {
@@ -701,7 +662,7 @@ void QQDeBreathWaveformEditor::mouseUp(const juce::MouseEvent& /*event*/)
     repaint();
 }
 
-void QQDeBreathWaveformEditor::mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel)
+void LegacyWaveform124::mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel)
 {
     const auto duration = getTimelineDurationSeconds();
     if (duration <= 0.0)
@@ -730,7 +691,7 @@ void QQDeBreathWaveformEditor::mouseWheelMove(const juce::MouseEvent& event, con
     }
 }
 
-bool QQDeBreathWaveformEditor::keyPressed(const juce::KeyPress& key)
+bool LegacyWaveform124::keyPressed(const juce::KeyPress& key)
 {
     if (key == juce::KeyPress::deleteKey || key == juce::KeyPress::backspaceKey)
     {
@@ -748,19 +709,19 @@ bool QQDeBreathWaveformEditor::keyPressed(const juce::KeyPress& key)
     return false;
 }
 
-int QQDeBreathWaveformEditor::timeToX(double seconds) const
+int LegacyWaveform124::timeToX(double seconds) const
 {
     const auto area = getWaveformArea();
     return area.getX() + static_cast<int>((seconds - viewStart) / juce::jmax(1.0e-9, viewEnd - viewStart) * area.getWidth());
 }
 
-double QQDeBreathWaveformEditor::xToTime(int x) const
+double LegacyWaveform124::xToTime(int x) const
 {
     const auto area = getWaveformArea();
     return viewStart + (static_cast<double>(x - area.getX()) / juce::jmax(1, area.getWidth())) * (viewEnd - viewStart);
 }
 
-int QQDeBreathWaveformEditor::hitTestRegion(int x) const
+int LegacyWaveform124::hitTestRegion(int x) const
 {
     const auto time = xToTime(x);
     for (auto i = regions.size(); --i >= 0;)
@@ -773,7 +734,7 @@ int QQDeBreathWaveformEditor::hitTestRegion(int x) const
     return -1;
 }
 
-int QQDeBreathWaveformEditor::hitTestRegionStartEdge(int x) const
+int LegacyWaveform124::hitTestRegionStartEdge(int x) const
 {
     const auto tolerance = juce::jmax(5, getWaveformArea().getWidth() / 240);
     for (auto i = regions.size(); --i >= 0;)
@@ -786,7 +747,7 @@ int QQDeBreathWaveformEditor::hitTestRegionStartEdge(int x) const
     return -1;
 }
 
-int QQDeBreathWaveformEditor::hitTestRegionEndEdge(int x) const
+int LegacyWaveform124::hitTestRegionEndEdge(int x) const
 {
     const auto tolerance = juce::jmax(5, getWaveformArea().getWidth() / 240);
     for (auto i = regions.size(); --i >= 0;)
@@ -799,7 +760,7 @@ int QQDeBreathWaveformEditor::hitTestRegionEndEdge(int x) const
     return -1;
 }
 
-void QQDeBreathWaveformEditor::updateMouseCursor(int x)
+void LegacyWaveform124::updateMouseCursor(int x)
 {
     if (hitTestRegionStartEdge(x) >= 0 || hitTestRegionEndEdge(x) >= 0)
         setMouseCursor(juce::MouseCursor::LeftRightResizeCursor);
@@ -809,7 +770,7 @@ void QQDeBreathWaveformEditor::updateMouseCursor(int x)
         setMouseCursor(juce::MouseCursor::NormalCursor);
 }
 
-void QQDeBreathWaveformEditor::selectRegion(int index)
+void LegacyWaveform124::selectRegion(int index)
 {
     selectedRegion = index >= 0 && index < regions.size() ? index : -1;
 
@@ -817,7 +778,7 @@ void QQDeBreathWaveformEditor::selectRegion(int index)
         onSelectedRegionChanged(selectedRegion);
 }
 
-void QQDeBreathWaveformEditor::pushUndoState()
+void LegacyWaveform124::pushUndoState()
 {
     undoStack.add(regions);
     redoStack.clear();
@@ -827,7 +788,7 @@ void QQDeBreathWaveformEditor::pushUndoState()
         undoStack.remove(0);
 }
 
-void QQDeBreathWaveformEditor::notifyRegionsChanged(bool rebuildDisplay)
+void LegacyWaveform124::notifyRegionsChanged(bool rebuildDisplay)
 {
     for (auto& region : regions)
     {
@@ -847,7 +808,7 @@ void QQDeBreathWaveformEditor::notifyRegionsChanged(bool rebuildDisplay)
         onRegionsChanged(regions);
 }
 
-int QQDeBreathWaveformEditor::insertRegionReplacingOverlaps(QQDeBreathBridgeRegion region)
+int LegacyWaveform124::insertRegionReplacingOverlaps(QQDeBreathBridgeRegion region)
 {
     pushUndoState();
 
@@ -900,14 +861,14 @@ int QQDeBreathWaveformEditor::insertRegionReplacingOverlaps(QQDeBreathBridgeRegi
     return -1;
 }
 
-void QQDeBreathWaveformEditor::fitView()
+void LegacyWaveform124::fitView()
 {
     viewStart = 0.0;
     viewEnd = juce::jmax(minViewSeconds, getTimelineDurationSeconds());
     updateScrollBar();
 }
 
-void QQDeBreathWaveformEditor::setView(double start, double end)
+void LegacyWaveform124::setView(double start, double end)
 {
     const auto duration = getTimelineDurationSeconds();
     auto span = juce::jlimit(minViewSeconds, juce::jmax(minViewSeconds, duration), end - start);
@@ -918,14 +879,14 @@ void QQDeBreathWaveformEditor::setView(double start, double end)
     repaint();
 }
 
-juce::Rectangle<int> QQDeBreathWaveformEditor::getWaveformArea() const
+juce::Rectangle<int> LegacyWaveform124::getWaveformArea() const
 {
     auto area = getLocalBounds().reduced(10);
     area.removeFromBottom(16);
     return area;
 }
 
-void QQDeBreathWaveformEditor::updateScrollBar()
+void LegacyWaveform124::updateScrollBar()
 {
     if (recordingOverlay)
     {
@@ -942,7 +903,7 @@ void QQDeBreathWaveformEditor::updateScrollBar()
     updatingScrollBar = false;
 }
 
-void QQDeBreathWaveformEditor::scrollBarMoved(juce::ScrollBar* scrollBarThatHasMoved, double newRangeStart)
+void LegacyWaveform124::scrollBarMoved(juce::ScrollBar* scrollBarThatHasMoved, double newRangeStart)
 {
     if (updatingScrollBar || scrollBarThatHasMoved != &horizontalScrollBar)
         return;
@@ -951,7 +912,7 @@ void QQDeBreathWaveformEditor::scrollBarMoved(juce::ScrollBar* scrollBarThatHasM
     setView(newRangeStart, newRangeStart + span);
 }
 
-juce::Colour QQDeBreathWaveformEditor::regionColour(const juce::String& type) const
+juce::Colour LegacyWaveform124::regionColour(const juce::String& type) const
 {
     if (type.equalsIgnoreCase("Noize"))
         return monitorNoize ? juce::Colour(0xff8b5cf6).withAlpha(0.42f)
@@ -961,7 +922,7 @@ juce::Colour QQDeBreathWaveformEditor::regionColour(const juce::String& type) co
                          : juce::Colour(0xff64748b).withAlpha(0.28f);
 }
 
-juce::int64 QQDeBreathWaveformEditor::regionStartSample(const QQDeBreathBridgeRegion& region) const
+juce::int64 LegacyWaveform124::regionStartSample(const QQDeBreathBridgeRegion& region) const
 {
     if (sampleRate <= 0.0)
         return 0;
@@ -972,7 +933,7 @@ juce::int64 QQDeBreathWaveformEditor::regionStartSample(const QQDeBreathBridgeRe
                                                             : static_cast<juce::int64>(std::llround(region.startTime * sampleRate)));
 }
 
-juce::int64 QQDeBreathWaveformEditor::regionEndSample(const QQDeBreathBridgeRegion& region) const
+juce::int64 LegacyWaveform124::regionEndSample(const QQDeBreathBridgeRegion& region) const
 {
     if (sampleRate <= 0.0)
         return 0;
@@ -983,7 +944,7 @@ juce::int64 QQDeBreathWaveformEditor::regionEndSample(const QQDeBreathBridgeRegi
                                                           : static_cast<juce::int64>(std::llround(region.endTime * sampleRate)));
 }
 
-bool QQDeBreathWaveformEditor::hasAdjacentRegionBefore(int regionIndex, juce::int64 start, int fadeSamples) const
+bool LegacyWaveform124::hasAdjacentRegionBefore(int regionIndex, juce::int64 start, int fadeSamples) const
 {
     const auto tolerance = juce::jmax<juce::int64>(1, fadeSamples);
     for (auto i = 0; i < regions.size(); ++i)
@@ -999,7 +960,7 @@ bool QQDeBreathWaveformEditor::hasAdjacentRegionBefore(int regionIndex, juce::in
     return false;
 }
 
-bool QQDeBreathWaveformEditor::hasAdjacentRegionAfter(int regionIndex, juce::int64 end, int fadeSamples) const
+bool LegacyWaveform124::hasAdjacentRegionAfter(int regionIndex, juce::int64 end, int fadeSamples) const
 {
     const auto tolerance = juce::jmax<juce::int64>(1, fadeSamples);
     for (auto i = 0; i < regions.size(); ++i)
@@ -1015,7 +976,7 @@ bool QQDeBreathWaveformEditor::hasAdjacentRegionAfter(int regionIndex, juce::int
     return false;
 }
 
-double QQDeBreathWaveformEditor::regionWeightAtSample(int regionIndex,
+double LegacyWaveform124::regionWeightAtSample(int regionIndex,
                                                       juce::int64 sampleIndex,
                                                       int fadeInSamples,
                                                       int fadeOutSamples) const
@@ -1047,18 +1008,15 @@ double QQDeBreathWaveformEditor::regionWeightAtSample(int regionIndex,
     return 0.0;
 }
 
-double QQDeBreathWaveformEditor::breathNormGainForRegion(int regionIndex) const
+double LegacyWaveform124::breathNormGainForRegion(int regionIndex) const
 {
     if (regionIndex >= 0 && regionIndex < breathNormGainCache.size())
-    {
-        const auto inversePeak = breathNormGainCache.getReference(regionIndex);
-        return inversePeak > 0.0 ? displayNormTarget * inversePeak : 1.0;
-    }
+        return breathNormGainCache.getReference(regionIndex);
 
     return 1.0;
 }
 
-double QQDeBreathWaveformEditor::displayRegionWeightAtSample(const DisplayRegion& region,
+double LegacyWaveform124::displayRegionWeightAtSample(const DisplayRegion& region,
                                                              juce::int64 sampleIndex,
                                                              int fadeInSamples,
                                                              int fadeOutSamples) const
@@ -1087,7 +1045,7 @@ double QQDeBreathWaveformEditor::displayRegionWeightAtSample(const DisplayRegion
     return 0.0;
 }
 
-double QQDeBreathWaveformEditor::renderedDisplaySample(juce::int64 sampleIndex, bool activeComponents) const
+double LegacyWaveform124::renderedDisplaySample(juce::int64 sampleIndex, bool activeComponents) const
 {
     if (sampleIndex < 0 || sampleIndex >= monoWaveform.getNumSamples())
         return 0.0;
@@ -1103,10 +1061,8 @@ double QQDeBreathWaveformEditor::renderedDisplaySample(juce::int64 sampleIndex, 
     auto noizeWeight = 0.0;
     auto breathNormGain = 1.0;
 
-    const auto first = std::upper_bound(displayPrefixEnds.begin(), displayPrefixEnds.end(), sampleIndex - fadeOutSamples);
-    for (auto index = static_cast<int>(first - displayPrefixEnds.begin()); index < displayRegions.size(); ++index)
+    for (const auto& region : displayRegions)
     {
-        const auto& region = displayRegions.getReference(index);
         const auto influenceStart = region.startSample - fadeInSamples;
         const auto influenceEnd = region.endSample + fadeOutSamples;
         if (sampleIndex < influenceStart)
@@ -1125,7 +1081,7 @@ double QQDeBreathWaveformEditor::renderedDisplaySample(juce::int64 sampleIndex, 
         else if (weight >= breathWeight)
         {
             breathWeight = weight;
-            breathNormGain = processingParams.normalizeBreath && region.normGain > 0.0 ? region.normGain * displayNormTarget : 1.0;
+            breathNormGain = processingParams.normalizeBreath ? region.normGain : 1.0;
         }
     }
 
@@ -1145,15 +1101,9 @@ double QQDeBreathWaveformEditor::renderedDisplaySample(juce::int64 sampleIndex, 
     {
         if (processedBreathDisplay.getNumSamples() == monoWaveform.getNumSamples()
             && sampleIndex < processedBreathDisplay.getNumSamples())
-        {
-            auto value = static_cast<double>(processedBreathDisplay.getSample(0, static_cast<int>(sampleIndex)))
-                       * (processedDisplayNormalised ? displayNormTarget : 1.0);
-            if (processedFixedBreathDisplay.getNumSamples() == monoWaveform.getNumSamples())
-                value += static_cast<double>(processedFixedBreathDisplay.getSample(0, static_cast<int>(sampleIndex)));
-            mixed += value * displayGain;
-        }
+            mixed += static_cast<double>(processedBreathDisplay.getSample(0, static_cast<int>(sampleIndex)));
         else
-            mixed += dry * breathWeight * breathNormGain * displayGain;
+            mixed += dry * breathWeight * breathNormGain * dbToGain(processingParams.breathGainDb);
     }
     if (monitorNoize == activeComponents)
         mixed += dry * noizeWeight;
@@ -1161,7 +1111,7 @@ double QQDeBreathWaveformEditor::renderedDisplaySample(juce::int64 sampleIndex, 
     return mixed;
 }
 
-void QQDeBreathWaveformEditor::drawFadeGuides(juce::Graphics& g, juce::Rectangle<int> area) const
+void LegacyWaveform124::drawFadeGuides(juce::Graphics& g, juce::Rectangle<int> area) const
 {
     if (! processingParams.enableFade || sampleRate <= 0.0 || displayRegions.isEmpty())
         return;
@@ -1208,20 +1158,27 @@ void QQDeBreathWaveformEditor::drawFadeGuides(juce::Graphics& g, juce::Rectangle
     }
 }
 
-void QQDeBreathWaveformEditor::rebuildBreathNormGainCache()
+void LegacyWaveform124::rebuildBreathNormGainCache()
 {
-    ++regionDisplayRevision;
     breathNormGainCache.clear();
     displayRegions.clear();
 
     for (auto regionIndex = 0; regionIndex < regions.size(); ++regionIndex)
     {
         const auto& region = regions.getReference(regionIndex);
-        auto gain = 0.0; // inverse peak; zero means the original non-normalisable fallback
+        auto gain = 1.0;
         if (sampleRate > 0.0 && monoWaveform.getNumSamples() > 0 && ! region.type.equalsIgnoreCase("Noize"))
         {
-            const auto peak = cachedRegionPeak(region);
-            if (peak > 1.0e-9f) gain = 1.0 / peak;
+            const auto start = regionStartSample(region);
+            const auto end = regionEndSample(region);
+            auto peak = 0.0f;
+            const auto* data = monoWaveform.getReadPointer(0);
+
+            for (auto sample = start; sample < end; ++sample)
+                peak = juce::jmax(peak, std::abs(data[static_cast<int>(sample)]));
+
+            if (peak > 1.0e-9f)
+                gain = dbToGain(processingParams.breathTargetDb) / static_cast<double>(peak);
         }
 
         breathNormGainCache.add(gain);
@@ -1264,22 +1221,15 @@ void QQDeBreathWaveformEditor::rebuildBreathNormGainCache()
         }
     }
 
-    displayPrefixEnds.clear();
-    juce::int64 maximumEnd = 0;
-    for (const auto& region : displayRegions)
-    {
-        maximumEnd = juce::jmax(maximumEnd, region.endSample);
-        displayPrefixEnds.push_back(maximumEnd);
-    }
     rebuildProcessedBreathDisplay();
 }
 
-double QQDeBreathWaveformEditor::dbToGain(double db)
+double LegacyWaveform124::dbToGain(double db)
 {
     return std::pow(10.0, db / 20.0);
 }
 
-juce::String QQDeBreathWaveformEditor::buildProcessedBreathDisplayKey() const
+juce::String LegacyWaveform124::buildProcessedBreathDisplayKey() const
 {
     juce::String key;
     key << "samples=" << monoWaveform.getNumSamples()
@@ -1288,32 +1238,107 @@ juce::String QQDeBreathWaveformEditor::buildProcessedBreathDisplayKey() const
         << "|" << juce::String(processingParams.fadeInMs, 4)
         << "|" << juce::String(processingParams.fadeOutMs, 4)
         << "|norm=" << (processingParams.normalizeBreath ? 1 : 0)
+        << "|" << juce::String(processingParams.breathTargetDb, 4)
+        << "|gain=" << juce::String(processingParams.breathGainDb, 4)
         << "|geq=" << serializeBreathEqState(processingParams.breathEqState);
 
-    key << "|regions=" << juce::String(static_cast<juce::int64>(regionDisplayRevision));
+    for (const auto& region : regions)
+    {
+        key << "|" << region.type
+            << ":" << juce::String(region.startSample)
+            << "-" << juce::String(region.endSample)
+            << ":" << juce::String(region.startTime, 6)
+            << "-" << juce::String(region.endTime, 6)
+            << ":g" << juce::String(region.gainDb, 3)
+            << ":eq" << serializeBreathEqState(region.eqState);
+    }
 
     return key;
 }
 
-void QQDeBreathWaveformEditor::rebuildProcessedBreathDisplay()
+void LegacyWaveform124::rebuildProcessedBreathDisplay()
 {
     const auto key = buildProcessedBreathDisplayKey();
-    if (key == processedBreathDisplayKey) return;
-    processedBreathDisplayKey = key;
-    if (!displaySource || sampleRate <= 0.0) return;
-    QQDeBreathWaveformDisplay::Request request;
-    request.source = displaySource;
-    request.sampleRate = sampleRate;
-    request.regions = regions;
-    request.settings.enableFade = processingParams.enableFade;
-    request.settings.fadeInMs = processingParams.fadeInMs;
-    request.settings.fadeOutMs = processingParams.fadeOutMs;
-    request.settings.normalizeBreath = processingParams.normalizeBreath;
-    request.settings.globalEq = processingParams.breathEqState;
-    if (!displayWorker.isThreadRunning() && !displayWorker.startThread())
-    {
-        processedBreathDisplayKey.clear();
+    if (key == processedBreathDisplayKey
+        && processedBreathDisplay.getNumSamples() == monoWaveform.getNumSamples())
         return;
+
+    processedBreathDisplayKey = key;
+    processedBreathDisplay.setSize(1, monoWaveform.getNumSamples(), false, false, true);
+    processedBreathDisplay.clear();
+
+    if (monoWaveform.getNumSamples() <= 0 || sampleRate <= 0.0 || displayRegions.isEmpty())
+        return;
+
+    const auto fadeInSamples = processingParams.enableFade
+                             ? static_cast<int>(std::llround(processingParams.fadeInMs * sampleRate / 1000.0))
+                             : 0;
+    const auto fadeOutSamples = processingParams.enableFade
+                              ? static_cast<int>(std::llround(processingParams.fadeOutMs * sampleRate / 1000.0))
+                              : 0;
+    const auto globalBreathGain = dbToGain(processingParams.breathGainDb);
+
+    auto fillRegionContribution = [&](juce::AudioBuffer<float>& dest,
+                                      int destOffset,
+                                      int regionIndex,
+                                      juce::int64 sourceStart,
+                                      int numSamples)
+    {
+        if (regionIndex < 0 || regionIndex >= regions.size())
+            return;
+
+        const auto& region = regions.getReference(regionIndex);
+        if (region.type.equalsIgnoreCase("Noize"))
+            return;
+
+        juce::AudioBuffer<float> regionBuffer(1, numSamples);
+        regionBuffer.clear();
+
+        const auto normGain = processingParams.normalizeBreath ? breathNormGainForRegion(regionIndex) : 1.0;
+        const auto regionGain = dbToGain(juce::jlimit(-30.0, 30.0, region.gainDb));
+        for (auto i = 0; i < numSamples; ++i)
+        {
+            const auto sourceSample = sourceStart + i;
+            if (sourceSample < 0 || sourceSample >= monoWaveform.getNumSamples())
+                continue;
+
+            const auto weight = regionWeightAtSample(regionIndex,
+                                                     sourceSample,
+                                                     fadeInSamples,
+                                                     fadeOutSamples);
+            if (weight <= 0.0)
+                continue;
+
+            const auto dry = static_cast<double>(monoWaveform.getSample(0, static_cast<int>(sourceSample)));
+            regionBuffer.addSample(0, i, static_cast<float>(dry * weight * normGain * globalBreathGain * regionGain));
+        }
+
+        if (processingParams.breathEqState.hasActiveProcessing())
+        {
+            QQDeBreathEqProcessor processor;
+            processor.prepare(sampleRate, 1, processingParams.breathEqState);
+            processor.process(regionBuffer);
+        }
+
+        if (region.eqState.hasActiveProcessing())
+        {
+            QQDeBreathEqProcessor processor;
+            processor.prepare(sampleRate, 1, region.eqState);
+            processor.process(regionBuffer);
+        }
+
+        dest.addFrom(0, destOffset, regionBuffer, 0, 0, numSamples);
+    };
+
+    for (auto regionIndex = 0; regionIndex < regions.size(); ++regionIndex)
+    {
+        const auto& region = regions.getReference(regionIndex);
+        if (region.type.equalsIgnoreCase("Noize"))
+            continue;
+
+        const auto start = juce::jmax<juce::int64>(0, regionStartSample(region) - fadeInSamples);
+        const auto end = juce::jmin<juce::int64>(monoWaveform.getNumSamples(), regionEndSample(region) + fadeOutSamples);
+        if (end > start)
+            fillRegionContribution(processedBreathDisplay, static_cast<int>(start), regionIndex, start, static_cast<int>(end - start));
     }
-    displayRequestedRevision = displayWorker.submit(std::move(request));
 }

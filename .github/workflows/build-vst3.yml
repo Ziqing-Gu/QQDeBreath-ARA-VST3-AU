@@ -43,14 +43,15 @@ jobs:
           lipo -archs "$binary" | tee QQDeBreath-macOS-Apple-Silicon-architectures.txt
           lipo "$binary" -verify_arch arm64
           codesign --force --deep --sign - "$plugin_path"
-          ditto -c -k --sequesterRsrc --keepParent "$plugin_path" QQDeBreath-macOS-Apple-Silicon-1.23.zip
+          codesign --verify --deep --strict --verbose=2 "$plugin_path"
+          ditto -c -k --sequesterRsrc --keepParent "$plugin_path" QQDeBreath-macOS-Apple-Silicon-1.25.zip
 
       - name: Upload Apple Silicon VST3
         uses: actions/upload-artifact@v7
         with:
-          name: QQDeBreath-macOS-Apple-Silicon-1.23
+          name: QQDeBreath-macOS-Apple-Silicon-1.25
           path: |
-            QQDeBreath-macOS-Apple-Silicon-1.23.zip
+            QQDeBreath-macOS-Apple-Silicon-1.25.zip
             QQDeBreath-macOS-Apple-Silicon-architectures.txt
           if-no-files-found: error
 
@@ -80,14 +81,15 @@ jobs:
           lipo -archs "$binary" | tee QQDeBreath-macOS-Intel-architectures.txt
           lipo "$binary" -verify_arch x86_64
           codesign --force --deep --sign - "$plugin_path"
-          ditto -c -k --sequesterRsrc --keepParent "$plugin_path" QQDeBreath-macOS-Intel-1.23.zip
+          codesign --verify --deep --strict --verbose=2 "$plugin_path"
+          ditto -c -k --sequesterRsrc --keepParent "$plugin_path" QQDeBreath-macOS-Intel-1.25.zip
 
       - name: Upload Intel VST3
         uses: actions/upload-artifact@v7
         with:
-          name: QQDeBreath-macOS-Intel-1.23
+          name: QQDeBreath-macOS-Intel-1.25
           path: |
-            QQDeBreath-macOS-Intel-1.23.zip
+            QQDeBreath-macOS-Intel-1.25.zip
             QQDeBreath-macOS-Intel-architectures.txt
           if-no-files-found: error
 
@@ -121,19 +123,19 @@ jobs:
           lipo "$binary" -verify_arch arm64 x86_64
           codesign --force --deep --sign - "$plugin_path"
           codesign --verify --deep --strict --verbose=2 "$plugin_path"
-          ditto -c -k --sequesterRsrc --keepParent "$plugin_path" QQDeBreath-macOS-AU-Universal-1.23.zip
-          cp docs/QQDeBreath-1.23-Windows-macOS-INSTALL.txt .
-          cp "docs/QQDeBreath 1.23 Windows与macOS安装使用说明（中文）.txt" .
+          ditto -c -k --sequesterRsrc --keepParent "$plugin_path" QQDeBreath-macOS-AU-Universal-1.25.zip
+          cp docs/QQDeBreath-1.25-Windows-macOS-INSTALL.txt .
+          cp "docs/QQDeBreath 1.25 Windows与macOS安装使用说明（中文）.txt" .
 
       - name: Upload Universal AU
         uses: actions/upload-artifact@v7
         with:
-          name: QQDeBreath-macOS-AU-Universal-1.23
+          name: QQDeBreath-macOS-AU-Universal-1.25
           path: |
-            QQDeBreath-macOS-AU-Universal-1.23.zip
+            QQDeBreath-macOS-AU-Universal-1.25.zip
             QQDeBreath-macOS-AU-Universal-architectures.txt
-            QQDeBreath-1.23-Windows-macOS-INSTALL.txt
-            QQDeBreath 1.23 Windows与macOS安装使用说明（中文）.txt
+            QQDeBreath-1.25-Windows-macOS-INSTALL.txt
+            QQDeBreath 1.25 Windows与macOS安装使用说明（中文）.txt
           if-no-files-found: error
   windows-x64:
     if: github.event_name == 'workflow_dispatch' && inputs.build_windows == true
@@ -158,11 +160,11 @@ jobs:
             Where-Object { $_.FullName -match 'Release' } |
             Select-Object -First 1
           if ($null -eq $plugin) { throw 'QQDeBreath.vst3 was not produced.' }
-          Compress-Archive -LiteralPath $plugin.FullName -DestinationPath QQDeBreath-Windows-x64-1.23.zip
+          Compress-Archive -LiteralPath $plugin.FullName -DestinationPath QQDeBreath-Windows-x64-1.25.zip
 
       - name: Upload Windows VST3
         uses: actions/upload-artifact@v7
         with:
-          name: QQDeBreath-Windows-x64-1.23
-          path: QQDeBreath-Windows-x64-1.23.zip
+          name: QQDeBreath-Windows-x64-1.25
+          path: QQDeBreath-Windows-x64-1.25.zip
           if-no-files-found: error
