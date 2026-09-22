@@ -3,11 +3,11 @@
 Current Stable: 1.25 (internal 1.0.25), designated by the user on 2026-09-22.
 Current Candidate: none.
 Previous designated Stable: 1.23. Immediate rollback package: 1.24 (export fix accepted).
-Previous stable / rollback: 1.20; 1.21 and 1.22 are rejected candidates, not rollback baselines.
+Historical 1.23 rollback: 1.20; 1.21 and 1.22 were rejected candidates. Current rollback choices are listed above.
 Platforms: Windows x64 VST3; macOS arm64 VST3, x86_64 VST3, Universal 2 AU; ARA-capable shared plug-in.
 Development: JUCE 8.0.13, CMake, MSVC 2022 / Xcode.
-Source of truth for this release's binary code: 45904d540e40247dc2606ee64c6b8d2d85fb4404.
-The tag v1.23 remains unchanged; later commits may correct documentation/workflow only.
+Source of truth for 1.25 binary code: bb7a0352de9393cfd5f5a7ddbf74f1c22c89aead (tag v1.25). Historical 1.23 binary code: 45904d540e40247dc2606ee64c6b8d2d85fb4404.
+Tags v1.23 and v1.25 remain unchanged; post-build documentation commits do not change the binary source.
 
 ## 2026-09-20 — 1.23 Stable transport fix
 User requirement: a stopped waveform click followed by Play must start the selected audio; a later DAW seek restores the original timeline.
