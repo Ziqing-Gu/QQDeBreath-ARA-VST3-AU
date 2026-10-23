@@ -1,8 +1,8 @@
 # QQDeBreath authoritative development handoff
 
-Current Stable: 1.26 (internal 1.0.26), explicitly designated by the user on 2026-10-24.
+Current Stable: 1.27 (internal 1.0.27), user-designated on 2026-10-24.
 Current Candidate: none.
-Previous designated Stable and rollback: 1.25.
+Previous designated Stable and rollback: 1.26.
 Historical 1.23 rollback: 1.20; 1.21 and 1.22 were rejected candidates. Current rollback choices are listed above.
 Platforms: Windows x64 VST3; macOS arm64 VST3, x86_64 VST3, Universal 2 AU; ARA-capable shared plug-in.
 Development: JUCE 8.0.13, CMake, MSVC 2022 / Xcode.
@@ -86,3 +86,17 @@ Compatibility and upgrade: archive schema remains version 1 and existing analysi
 1.26 validation: real ARA 22 renderers / 44 sources, 44 audible and 0 silent; 48 legacy DSP cases match exactly. Existing transport, editor, export and waveform probes passed. Windows installation matches the validated binary. User-designated Stable and Plan B completion are recorded locally; the completed backup remains frozen and must not be accessed by later plans.
 1.26 implementation: source lifecycle callbacks own raw-audio preload and invalidation on the model thread; no host reads occur in the realtime renderer. Filtered archive restore preserves unrelated state and valid audio. Prepared immutable region metadata retains legacy overlap/tie/EQ semantics. Tests/LegacyAra125.h is a test-only frozen DSP oracle.
 Plan C/D: reuse the verified Windows binary, build the three macOS variants from this public source, and publish versioned artifacts. The user requested the existing illustrated manuals remain unchanged. No original-project Studio One acceptance is claimed.
+
+
+## 1.27 Stable — 2026-10-24 / Apple Clang portability
+
+中文：将存档恢复时清除失效导出路径的赋值明确写为 `juce::File {}`，解决 Apple Clang 的重载歧义。保留 1.26 的多音源缓存、恢复和渲染修复；音频处理算法未改变。界面版本为 ARA 1.27，内部元数据为 1.0.27。
+
+English: Explicitly assign `juce::File {}` when clearing an obsolete exported-WAV path during archive restore, resolving Apple Clang's ambiguous assignment. The 1.26 multi-source cache, archive and render fixes remain intact; audio processing algorithms are unchanged. UI version: ARA 1.27; internal metadata: 1.0.27.
+
+Validation: Windows Release build, all five regression probes and actual VST3 factory loading passed. 22 renderers / 44 sources: 44 audible and 0 silent. 48 legacy ARA DSP cases match sample-for-sample. PE and module metadata are 1.0.27. macOS build and signature checks are recorded with this release. No original Studio One 7 project acceptance is claimed.
+
+Status: Stable, explicitly designated by the user on 2026-10-24. Windows is installed with verified file-hash parity; completed Windows tests are reused. Previous Stable/rollback: 1.26. Mac build and publication results are recorded separately. Original bilingual PDF manuals remain unchanged.
+
+
+1.26 macOS build failed on ambiguous juce::File assignment; 1.27 resolves it. The original 1.26 tag and Windows history are preserved. No 1.26 macOS artifacts or formal Release were published.

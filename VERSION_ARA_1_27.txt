@@ -1,0 +1,7 @@
+QQDeBreath ARA 1.27 Stable
+Internal JUCE/VST3 version: 1.0.27
+Date: 2026-10-24
+User-designated Stable; previous Stable/rollback: 1.26.
+Explicit juce::File assignment resolves Apple Clang ambiguity; 1.26 ARA fixes and DSP rules preserved.
+Windows Release build, five probes and VST3 factory loading passed; installed files match validated output.
+Original Studio One 7 project acceptance not reported. Mac and Plan B/C/D completion recorded separately.

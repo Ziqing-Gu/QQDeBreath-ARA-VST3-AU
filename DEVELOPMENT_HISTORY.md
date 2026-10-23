@@ -227,3 +227,17 @@ Tradeoff: First source loading and undo reactivation can wait for synchronous ho
 兼容与升级：存档 schema 仍为 version 1；保留已有分析与 EQ 规则。旧版已渲染出的静音文件需要从原始事件重新渲染。
 Compatibility and upgrade: archive schema remains version 1 and existing analysis/EQ rules are preserved. Previously rendered silent files must be rendered again from original events.
 
+
+
+## 1.27 Stable — 2026-10-24 / Apple Clang portability
+
+中文：将存档恢复时清除失效导出路径的赋值明确写为 `juce::File {}`，解决 Apple Clang 的重载歧义。保留 1.26 的多音源缓存、恢复和渲染修复；音频处理算法未改变。界面版本为 ARA 1.27，内部元数据为 1.0.27。
+
+English: Explicitly assign `juce::File {}` when clearing an obsolete exported-WAV path during archive restore, resolving Apple Clang's ambiguous assignment. The 1.26 multi-source cache, archive and render fixes remain intact; audio processing algorithms are unchanged. UI version: ARA 1.27; internal metadata: 1.0.27.
+
+Validation: Windows Release build, all five regression probes and actual VST3 factory loading passed. 22 renderers / 44 sources: 44 audible and 0 silent. 48 legacy ARA DSP cases match sample-for-sample. PE and module metadata are 1.0.27. macOS build and signature checks are recorded with this release. No original Studio One 7 project acceptance is claimed.
+
+Status: Stable, explicitly designated by the user on 2026-10-24. Windows is installed with verified file-hash parity; completed Windows tests are reused. Previous Stable/rollback: 1.26. Mac build and publication results are recorded separately. Original bilingual PDF manuals remain unchanged.
+
+
+1.26 macOS build failed on ambiguous juce::File assignment; 1.27 resolves it. The original 1.26 tag and Windows history are preserved. No 1.26 macOS artifacts or formal Release were published.

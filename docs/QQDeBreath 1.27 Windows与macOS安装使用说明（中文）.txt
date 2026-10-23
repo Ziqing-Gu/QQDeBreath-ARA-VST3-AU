@@ -1,0 +1,96 @@
+QQDeBreath 1.27 Stable — Windows / macOS 安装与升级说明
+厂商：Qing Audio
+发布日期：2026-10-24
+插件内部版本：1.0.27
+
+1. 发行范围、许可与源码
+本包为源码可见非商业插件成品，禁止商业使用。分发时必须免费提供完整对应源码，并保留作者、出处、修改日期、修改说明和许可证。插件 ZIP 只包含可安装插件，不含源码；完整源码包包含本项目和依赖源码及许可声明，单独下载：
+https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.27/QQDeBreath-1.27-Complete-Source.zip
+源码仓库：https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU
+发行标签：v1.27
+本次只有一个产品：VST3 的 QQDeBreath.vst3 与 AU 的 QQDeBreath.component；使用的格式均应升级至 1.27，不要混用旧版。
+Windows：Windows 10/11 x64 与 64 位 VST3 宿主。
+macOS：macOS 11 或更高版本，选择匹配宿主运行架构的包。
+
+2. 文件选择
+QQDeBreath-Windows-x64-1.27.zip — Windows x64 VST3
+QQDeBreath-macOS-Apple-Silicon-1.27.zip — Apple Silicon 原生 arm64 VST3
+QQDeBreath-macOS-Intel-1.27.zip — Intel x86_64 VST3；在 Apple Silicon 上运行 x86_64/Rosetta 宿主时选择此架构
+QQDeBreath-macOS-AU-Universal-1.27.zip — Universal 2 AU，同时含 arm64 与 x86_64；Logic Pro 使用 AU
+仅安装需要的格式。Mac 的 VST3 只选择一个架构包，不要同时安装两套。Linux 本次不提供。
+
+3. Windows 安装/升级
+1) 完全退出 Cubase、Nuendo、REAPER、Studio One 及其他插件宿主和扫描程序。
+2) 解压 QQDeBreath-Windows-x64-1.27.zip，确认根层存在完整的 QQDeBreath.vst3 文件夹。
+3) 将整个 QQDeBreath.vst3 文件夹复制到：
+   C:\Program Files\Common Files\VST3
+   系统目录可能要求管理员权限。已有同名插件时覆盖对应文件；避免出现两层同名 .vst3 文件夹。
+4) 本版本实际插件文件名未变。其他扫描目录中的旧版/重复副本不要与新版并存；先退出宿主，移走旧副本，再复制新版。
+5) 重新打开宿主，执行 VST3 重新扫描/重新激活。若仍显示旧版，检查重复扫描目录，退出再打开宿主；按宿主自己的说明清除插件扫描缓存。
+下载 ZIP 若被 Windows 阻止，可在文件属性中解除锁定后重新解压。
+
+4. macOS VST3 安装/升级
+1) 退出所有 DAW。确认宿主为原生 arm64 还是 Intel/Rosetta x86_64，按第 2 节只选择一个 VST3 ZIP。
+2) 解压后复制完整 QQDeBreath.vst3 到用户目录：
+   ~/Library/Audio/Plug-Ins/VST3
+   或系统目录（通常需要管理员权限）：
+   /Library/Audio/Plug-Ins/VST3
+   Finder 可用“前往 > 前往文件夹”输入上述路径；按住 Option 打开“前往”菜单也可显示用户资源库。
+3) 用户目录与系统目录只保留一份该插件。先在宿主完全退出时移走旧版/重复副本，再复制新版。
+4) 重新打开宿主并重新扫描 VST3。必要时重启电脑后再扫描。
+
+5. macOS AU 安装/升级
+解压 QQDeBreath-macOS-AU-Universal-1.27.zip，复制完整 QQDeBreath.component 到：
+~/Library/Audio/Plug-Ins/Components
+或 /Library/Audio/Plug-Ins/Components（需要时提供管理员权限）。
+AU 与 VST3 为独立格式，只装需要的格式；同一格式避免用户/系统目录重复安装。
+Logic Pro 不加载 VST3。安装 AU 后打开 Logic Pro 的插件管理器，对 QQDeBreath 执行重置与重新扫描；其他宿主使用其 Audio Units 重扫功能。
+如需第三方 ARA AU 且原生模式不能使用宿主的 ARA 工作流，可按宿主要求以 Rosetta 运行 Logic Pro，再重新扫描。此说明不代表本次新增 Logic/ARA 实机验证。
+
+6. macOS 安全与加载失败
+Mac 插件采用 ad-hoc 签名，没有 Apple Developer ID 签名或公证。macOS 可能因下载隔离阻止扫描。
+先尝试“系统设置 > 隐私与安全性”中允许相应插件。仅在确认来自本仓库、文件可信时，在终端对实际安装位置执行：
+xattr -dr com.apple.quarantine "$HOME/Library/Audio/Plug-Ins/VST3/QQDeBreath.vst3"
+xattr -dr com.apple.quarantine "$HOME/Library/Audio/Plug-Ins/Components/QQDeBreath.component"
+系统目录示例（仅在实际安装于该处时执行）：
+sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/VST3/QQDeBreath.vst3"
+sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/Components/QQDeBreath.component"
+不确定来源时不要执行解除隔离命令。之后退出并重开宿主、重新扫描；必要时重启电脑。
+
+7. 本版使用变化、说明书与验证边界
+普通 VST3：停止时点击插件波形，再按播放，从所选音频位置开始；原地停止/继续保留试听位置。随后在 DAW 重新定位或循环回跳时，取消内部试听偏移与循环，指针和实际音频恢复工程对齐。停止时宿主报告新定位，也会取消待播放选择。
+ARA 1.27 调整音源缓存、存档恢复和渲染预计算，保留原有 DSP 规则。普通 VST3 与 ARA 使用同一插件文件，但对应宿主工作流不同。
+本包恢复原有中英文图文说明书，原版封面为“独立版 1.11 / VST3-ARA 1.20”。第 1–2 页为独立版，第 3–5 页为普通 VST3，第 6 页为 ARA。本包不含独立应用程序。原 PDF 未修改、未冒充 1.27 手册；普通 VST3 的播放行为以本说明的 1.27 更新为准。
+Windows 自动回归和加载检查通过；Mac 构建、架构和签名检查结果见对应 Release 记录。不把编译检查当作 Mac/ARA 宿主实机验收。
+https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.27
+
+Based on QQDeBreath by Qing Audio / Ziqing Gu.
+Modified by Codex at the user's request, 2026-10-24.
+
+
+
+## 1.27 Stable — 2026-10-24 / Apple Clang portability
+
+中文：将存档恢复时清除失效导出路径的赋值明确写为 `juce::File {}`，解决 Apple Clang 的重载歧义。保留 1.26 的多音源缓存、恢复和渲染修复；音频处理算法未改变。界面版本为 ARA 1.27，内部元数据为 1.0.27。
+
+English: Explicitly assign `juce::File {}` when clearing an obsolete exported-WAV path during archive restore, resolving Apple Clang's ambiguous assignment. The 1.26 multi-source cache, archive and render fixes remain intact; audio processing algorithms are unchanged. UI version: ARA 1.27; internal metadata: 1.0.27.
+
+Validation: Windows Release build, all five regression probes and actual VST3 factory loading passed. 22 renderers / 44 sources: 44 audible and 0 silent. 48 legacy ARA DSP cases match sample-for-sample. PE and module metadata are 1.0.27. macOS build and signature checks are recorded with this release. No original Studio One 7 project acceptance is claimed.
+
+Status: Stable, explicitly designated by the user on 2026-10-24. Windows is installed with verified file-hash parity; completed Windows tests are reused. Previous Stable/rollback: 1.26. Mac build and publication results are recorded separately. Original bilingual PDF manuals remain unchanged.
+
+## 1.26 Stable — 2026-10-24 / ARA multi-source rendering
+
+中文：修复同一 ARA 文档超过 32 个音源后旧音源被淘汰、离线渲染为静音的问题。缓存随音源生命周期管理，局部恢复只更新指定音源，保留有效原始音频；支持持久 ID 重映射、工程级独立存档和未分析音源。素材在宿主模型线程允许读取时完成预载，不在实时回调中读取宿主音频。ARA 区域边界、邻接、增益及归一化系数预计算，保留原来的重叠优先级和 EQ 规则；离线渲染不再依赖 Playing 标志。
+
+English: Fixed older sources becoming silent when an ARA document exceeds 32 audio sources. Caches now follow source lifetime; filtered restore preserves unaffected edits and valid raw audio, including source-ID remapping, document-only archives and untouched sources. Missing audio is preloaded on the host model thread before playback, without host reads in the realtime callback. ARA region bounds, adjacency and gains are precomputed while retaining legacy overlap and EQ semantics. Offline rendering no longer requires the Playing flag.
+
+Status: Stable, explicitly designated by the user on 2026-10-24. Existing Windows build and five regression probes are reused; 1.26 is installed with file-hash parity. Previous Stable/rollback: 1.25. Original Studio One 7 project validation has not been reported; Stable designation does not imply a new DAW test or macOS build.
+
+Tradeoff: First source loading and undo reactivation can wait for synchronous host reads; active audio is still cached in full, so memory follows active source duration/channel count. Sources are released on undo deactivation or destruction. Host read failure does not publish partial audio and is retried at a later model edit/load request. Real Studio One 7 acceptance has not been reported. macOS builds are verified separately in the release record.
+
+兼容与升级：存档 schema 仍为 version 1；保留已有分析与 EQ 规则。旧版已渲染出的静音文件需要从原始事件重新渲染。
+Compatibility and upgrade: archive schema remains version 1 and existing analysis/EQ rules are preserved. Previously rendered silent files must be rendered again from original events.
+
+首次预载和撤销重新激活可能需要等待；有效音源以完整样本缓存，内存随素材时长和声道数增加。
+Initial preloading and undo reactivation may wait; full-source memory usage scales with active duration and channel count.

@@ -2362,7 +2362,7 @@ bool QQDeBreathARADocumentController::doRestoreObjectsFromStream(juce::ARAInputS
             if (info.sampleRate != target->getSampleRate() || info.numSamples != target->getSampleCount()
                 || info.channelCount != static_cast<int>(target->getChannelCount()))
                 continue;
-            if (fingerprint != info.sourceFingerprint) info.exportedWav = {};
+            if (fingerprint != info.sourceFingerprint) info.exportedWav = juce::File {};
             info.persistentId = juce::String::fromUTF8(target->getPersistentID().c_str());
             info.sourceFingerprint = fingerprint;
             state.analysisResult.sourceKey = fingerprint;

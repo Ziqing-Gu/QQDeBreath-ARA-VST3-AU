@@ -1,25 +1,25 @@
 {
   "product": "QQDeBreath ARA/VST3/AU",
-  "version": "1.26",
-  "internalVersion": "1.0.26",
+  "version": "1.27",
+  "internalVersion": "1.0.27",
   "status": "Stable",
-  "previousDesignatedStable": "1.25",
-  "rollbackVersion": "1.25",
-  "confirmedAt": "2026-10-24T01:48:06.790371+08:00",
-  "confirmationSource": "User: 覆盖 设为Stable 执行plan B。",
+  "previousDesignatedStable": "1.26",
+  "rollbackVersion": "1.26",
+  "confirmedAt": "2026-10-24T03:40:59.547160+08:00",
+  "confirmationSource": "User: 设为stable 执行plan BCD (in direct response to 1.27 scope confirmation)",
   "binaryChangedForStableMarking": false,
   "pluginFiles": [
     {
       "path": "Contents/Resources/moduleinfo.json",
       "bytes": 1421,
-      "sha256": "7416c08a4b6065ab66444835730198aa937ac5779529bded8fe7b991964ba7d9"
+      "sha256": "96cac99ce3b7a8d9b7056a839e7c7400462e6f57f4ef77298bce79a8be7b93fa"
     },
     {
       "path": "Contents/x86_64-win/QQDeBreath.vst3",
       "bytes": 7476736,
-      "sha256": "5b1d812f423239d8672e29a975d1f6cb63f37ce89e7b0163443d677bb53278b0"
+      "sha256": "2379130138e3f9e4cba4f79bdfe239b9ea4b8d86937057a2a725f092285ce12b"
     }
   ],
-  "scope": "Explicit user Stable designation. Existing 1.26 Windows build and regression results reused; no original Studio One 7 project acceptance was reported.",
-  "originalStudioOneProjectVerified": false
+  "originalStudioOneProjectVerified": false,
+  "scope": "User-designated Stable; completed Windows build and five probes reused; Mac validation follows in Plan C."
 }
