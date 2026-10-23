@@ -1,23 +1,25 @@
 {
   "product": "QQDeBreath ARA/VST3/AU",
-  "version": "1.25",
-  "internalVersion": "1.0.25",
+  "version": "1.26",
+  "internalVersion": "1.0.26",
   "status": "Stable",
-  "previousDesignatedStable": "1.23",
-  "confirmedAt": "2026-09-22T07:18:14.692337+08:00",
-  "confirmationSource": "User: 效果不错。设为Stable。执行Plan B。",
+  "previousDesignatedStable": "1.25",
+  "rollbackVersion": "1.25",
+  "confirmedAt": "2026-10-24T01:48:06.790371+08:00",
+  "confirmationSource": "User: 覆盖 设为Stable 执行plan B。",
   "binaryChangedForStableMarking": false,
   "pluginFiles": [
     {
       "path": "Contents/Resources/moduleinfo.json",
       "bytes": 1421,
-      "sha256": "c095b705da3235822748f6f4c6126c45ec60274d38b12b2204ff22271728718d"
+      "sha256": "7416c08a4b6065ab66444835730198aa937ac5779529bded8fe7b991964ba7d9"
     },
     {
       "path": "Contents/x86_64-win/QQDeBreath.vst3",
-      "bytes": 7464960,
-      "sha256": "93f7ccdd17b8e8759c934bbce19110d5d0cad8fad54bec7c6f0826ed9548eb73"
+      "bytes": 7476736,
+      "sha256": "5b1d812f423239d8672e29a975d1f6cb63f37ce89e7b0163443d677bb53278b0"
     }
   ],
-  "scope": "User accepted Gain/Norm Target and EQ Auto Apply responsiveness after 1.25 install; Export Stems fix accepted in 1.24."
+  "scope": "Explicit user Stable designation. Existing 1.26 Windows build and regression results reused; no original Studio One 7 project acceptance was reported.",
+  "originalStudioOneProjectVerified": false
 }

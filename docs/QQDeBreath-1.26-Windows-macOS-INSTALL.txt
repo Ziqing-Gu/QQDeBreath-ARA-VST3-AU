@@ -1,0 +1,85 @@
+QQDeBreath 1.26 Stable — Windows / macOS installation and upgrade guide
+Manufacturer: Qing Audio
+Release date: 2026-10-24
+Internal plug-in version: 1.0.26
+
+1. Scope, license and source
+This is a source-available, non-commercial plug-in distribution. NO COMMERCIAL USE. Redistribution must provide complete corresponding source without charge and preserve attribution, change date/description and licenses. Plug-in ZIPs contain installable bundles, not source. License notices and complete dependency source are in the Complete-Source archive. Download the complete source separately:
+https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.26/QQDeBreath-1.26-Complete-Source.zip
+Repository: https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU
+Release tag: v1.26
+This release contains one product: QQDeBreath.vst3 (VST3) and QQDeBreath.component (AU). Upgrade every format you use to 1.26; do not mix old versions.
+Windows: Windows 10/11 x64 and a 64-bit VST3 host.
+macOS: macOS 11 or later; match the host's running architecture.
+
+2. Choose the correct archive
+QQDeBreath-Windows-x64-1.26.zip — Windows x64 VST3
+QQDeBreath-macOS-Apple-Silicon-1.26.zip — native Apple Silicon arm64 VST3
+QQDeBreath-macOS-Intel-1.26.zip — Intel x86_64 VST3, also for an x86_64/Rosetta host on Apple Silicon
+QQDeBreath-macOS-AU-Universal-1.26.zip — Universal 2 AU with both arm64 and x86_64; use AU for Logic Pro
+Install only the formats you need. Select exactly one Mac VST3 architecture; do not install both. No Linux package is provided.
+
+3. Windows installation / upgrade
+1) Completely quit Cubase, Nuendo, REAPER, Studio One and every other plug-in host/scanner.
+2) Extract QQDeBreath-Windows-x64-1.26.zip. The root must contain the complete QQDeBreath.vst3 folder.
+3) Copy that entire folder into:
+   C:\Program Files\Common Files\VST3
+   Administrator approval may be needed. Replace the corresponding existing files. Do not create two nested folders with the same .vst3 name.
+4) The plug-in filename has not changed. Remove old/duplicate copies from other scanned locations while hosts are closed, then copy the new version.
+5) Reopen the host and rescan/reactivate VST3. If an old version remains visible, check duplicate scan paths, restart the host, and follow its documented plug-in-cache reset procedure.
+If Windows blocks the downloaded ZIP, unblock it in file Properties and extract again.
+
+4. macOS VST3 installation / upgrade
+1) Quit all DAWs. Check whether the host runs as native arm64 or Intel/Rosetta x86_64; select only one matching VST3 ZIP.
+2) Extract and copy the complete QQDeBreath.vst3 bundle into the user folder:
+   ~/Library/Audio/Plug-Ins/VST3
+   Or the system folder, which may require administrator approval:
+   /Library/Audio/Plug-Ins/VST3
+   Use Finder > Go > Go to Folder and enter the path. Holding Option in Finder's Go menu also reveals the user Library.
+3) Keep only one copy of this format across user/system folders. With all hosts closed, move old/duplicate copies out before installing the new version.
+4) Reopen the DAW and rescan VST3; restart the computer if necessary.
+
+5. macOS AU installation / upgrade
+Extract QQDeBreath-macOS-AU-Universal-1.26.zip and copy the complete QQDeBreath.component into:
+~/Library/Audio/Plug-Ins/Components
+or /Library/Audio/Plug-Ins/Components (administrator approval may be needed).
+AU and VST3 are separate formats. Install only what you need; avoid duplicates of the same format in user/system folders.
+Logic Pro does not load VST3. After installing AU, use Logic Pro's Plug-in Manager to reset/rescan QQDeBreath; other hosts provide their own Audio Units rescan.
+For third-party ARA AU workflows unavailable in native mode, follow the host's requirements for running Logic Pro under Rosetta and rescan. This is not a claim of new Logic/ARA host testing.
+
+6. macOS security and loading problems
+Mac packages are ad-hoc signed, not Apple Developer ID signed or notarized. Download quarantine can block scanning.
+First try allowing the plug-in in System Settings > Privacy & Security. Only for a trusted download from this repository, apply the commands to the actual installation location:
+xattr -dr com.apple.quarantine "$HOME/Library/Audio/Plug-Ins/VST3/QQDeBreath.vst3"
+xattr -dr com.apple.quarantine "$HOME/Library/Audio/Plug-Ins/Components/QQDeBreath.component"
+For system-wide locations, only if installed there:
+sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/VST3/QQDeBreath.vst3"
+sudo xattr -dr com.apple.quarantine "/Library/Audio/Plug-Ins/Components/QQDeBreath.component"
+Do not remove quarantine from files of uncertain origin. Quit/reopen the host, rescan, and restart the computer if needed.
+
+7. Version behavior, manuals and validation limits
+Ordinary VST3: click the waveform while stopped, then press Play to start the selected audio. Pause/resume in place retains audition. A later DAW relocation or cycle wrap clears the audition offset/internal loop and realigns both cursor and audio with the project. A new host-reported stopped location also cancels a pending selection.
+ARA 1.26 changes source caching, archive restore and render-plan preparation while preserving the previous DSP rules. Ordinary VST3 and ARA share the plug-in binary but use different host workflows.
+The original Chinese and English illustrated manuals are included unchanged. Their covers identify Standalone 1.11 / VST3-ARA 1.20. Pages 1-2 cover the standalone app, pages 3-5 ordinary VST3, and page 6 ARA. No standalone application is included in this package. These are not relabeled as 1.26 manuals; use the transport update below for version 1.26.
+Windows regression/loading checks passed. Mac build, architecture and signing results are recorded with the release. Build checks are not real macOS/ARA host acceptance.
+https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.26
+
+Based on QQDeBreath by Qing Audio / Ziqing Gu.
+Modified by Codex at the user's request, 2026-10-24.
+
+
+## 1.26 Stable — 2026-10-24 / ARA multi-source rendering
+
+中文：修复同一 ARA 文档超过 32 个音源后旧音源被淘汰、离线渲染为静音的问题。缓存随音源生命周期管理，局部恢复只更新指定音源，保留有效原始音频；支持持久 ID 重映射、工程级独立存档和未分析音源。素材在宿主模型线程允许读取时完成预载，不在实时回调中读取宿主音频。ARA 区域边界、邻接、增益及归一化系数预计算，保留原来的重叠优先级和 EQ 规则；离线渲染不再依赖 Playing 标志。
+
+English: Fixed older sources becoming silent when an ARA document exceeds 32 audio sources. Caches now follow source lifetime; filtered restore preserves unaffected edits and valid raw audio, including source-ID remapping, document-only archives and untouched sources. Missing audio is preloaded on the host model thread before playback, without host reads in the realtime callback. ARA region bounds, adjacency and gains are precomputed while retaining legacy overlap and EQ semantics. Offline rendering no longer requires the Playing flag.
+
+Status: Stable, explicitly designated by the user on 2026-10-24. Existing Windows build and five regression probes are reused; 1.26 is installed with file-hash parity. Previous Stable/rollback: 1.25. Original Studio One 7 project validation has not been reported; Stable designation does not imply a new DAW test or macOS build.
+
+Tradeoff: First source loading and undo reactivation can wait for synchronous host reads; active audio is still cached in full, so memory follows active source duration/channel count. Sources are released on undo deactivation or destruction. Host read failure does not publish partial audio and is retried at a later model edit/load request. Real Studio One 7 acceptance has not been reported. macOS builds are verified separately in the release record.
+
+兼容与升级：存档 schema 仍为 version 1；保留已有分析与 EQ 规则。旧版已渲染出的静音文件需要从原始事件重新渲染。
+Compatibility and upgrade: archive schema remains version 1 and existing analysis/EQ rules are preserved. Previously rendered silent files must be rendered again from original events.
+
+首次预载和撤销重新激活可能需要等待；有效音源以完整样本缓存，内存随素材时长和声道数增加。
+Initial preloading and undo reactivation may wait; full-source memory usage scales with active duration and channel count.

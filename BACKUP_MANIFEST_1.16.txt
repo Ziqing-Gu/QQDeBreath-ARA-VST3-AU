@@ -2,8 +2,8 @@ QQDeBreathTool ARA / VST3 / AU 1.16 backup manifest
 ===================================================
 Date: 2026-07-28
 Version: 1.16
-Source workspace: C:\Users\86189\Documents\Codex\2026-06-30\qqdebreathtool\plugin
-Backup path: D:\备份文件\Vibe Coding\去呼吸\源代码\QQDeBreathTool ARA VST3 AU 1.16
+Source workspace: historical local record; private path omitted
+Backup path: historical local record; private path omitted
 GitHub repository: https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU
 Git commit: e7a7ce6b60cbb860ba54f469cb42c648264dda39
 Documentation correction commit: 895f241cb319d11d7a3d0eab5a73106e7563162b

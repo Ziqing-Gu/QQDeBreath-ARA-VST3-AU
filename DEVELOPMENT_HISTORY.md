@@ -212,3 +212,18 @@ QQDeBreath 项目仍然可以继续开发。当前不能彻底保证的是：在
 - 当前工作只涉及 QQDeBreath；QQEasyTool 的修复仍暂停。此次范围到 Plan B。
 - JUCE 8.0.13 commit: 7c9d3783b127263d72bb65fe0a7e2dc8a02a7ac2。
 - 原有 Qing Audio 非商业许可证及第三方许可保留。
+
+
+## 1.26 Stable — 2026-10-24 / ARA multi-source rendering
+
+中文：修复同一 ARA 文档超过 32 个音源后旧音源被淘汰、离线渲染为静音的问题。缓存随音源生命周期管理，局部恢复只更新指定音源，保留有效原始音频；支持持久 ID 重映射、工程级独立存档和未分析音源。素材在宿主模型线程允许读取时完成预载，不在实时回调中读取宿主音频。ARA 区域边界、邻接、增益及归一化系数预计算，保留原来的重叠优先级和 EQ 规则；离线渲染不再依赖 Playing 标志。
+
+English: Fixed older sources becoming silent when an ARA document exceeds 32 audio sources. Caches now follow source lifetime; filtered restore preserves unaffected edits and valid raw audio, including source-ID remapping, document-only archives and untouched sources. Missing audio is preloaded on the host model thread before playback, without host reads in the realtime callback. ARA region bounds, adjacency and gains are precomputed while retaining legacy overlap and EQ semantics. Offline rendering no longer requires the Playing flag.
+
+Status: Stable, explicitly designated by the user on 2026-10-24. Existing Windows build and five regression probes are reused; 1.26 is installed with file-hash parity. Previous Stable/rollback: 1.25. Original Studio One 7 project validation has not been reported; Stable designation does not imply a new DAW test or macOS build.
+
+Tradeoff: First source loading and undo reactivation can wait for synchronous host reads; active audio is still cached in full, so memory follows active source duration/channel count. Sources are released on undo deactivation or destruction. Host read failure does not publish partial audio and is retried at a later model edit/load request. Real Studio One 7 acceptance has not been reported. macOS builds are verified separately in the release record.
+
+兼容与升级：存档 schema 仍为 version 1；保留已有分析与 EQ 规则。旧版已渲染出的静音文件需要从原始事件重新渲染。
+Compatibility and upgrade: archive schema remains version 1 and existing analysis/EQ rules are preserved. Previously rendered silent files must be rendered again from original events.
+

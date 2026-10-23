@@ -1,6 +1,6 @@
-﻿cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.22)
 
-project(QQDeBreath VERSION 1.0.25 LANGUAGES C CXX)
+project(QQDeBreath VERSION 1.0.26 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -64,6 +64,15 @@ juce_add_plugin(QQDeBreath
     COPY_PLUGIN_AFTER_BUILD ${QQDEBREATH_COPY_AFTER_BUILD}
     VST3_CATEGORIES Fx
 )
+
+# JUCE 8.0.13's Windows resource command does not depend on Info.txt. Add the
+# dependency so an incremental version bump also updates PE File/ProductVersion.
+if(WIN32 AND TARGET QQDeBreath_rc_lib)
+    get_target_property(QQDEBREATH_GENERATED_CODE QQDeBreath JUCE_GENERATED_SOURCES_DIRECTORY)
+    get_target_property(QQDEBREATH_VERSION_INFO QQDeBreath JUCE_INFO_FILE)
+    add_custom_command(OUTPUT "${QQDEBREATH_GENERATED_CODE}/QQDeBreath_resources.rc"
+        APPEND DEPENDS "${QQDEBREATH_VERSION_INFO}")
+endif()
 
 target_sources(QQDeBreath
     PRIVATE
@@ -219,4 +228,14 @@ if(MSVC)
 endif()
 target_link_libraries(qq_debreath_waveform_display_probe PRIVATE
     QQDeBreath ARA_PlugIn_Library juce::juce_audio_plugin_client
+    juce::juce_audio_utils juce::juce_dsp)
+
+add_executable(qq_debreath_ara_multi_instance_probe tests/AraMultiInstanceProbe.cpp)
+target_include_directories(qq_debreath_ara_multi_instance_probe PRIVATE src tests)
+target_compile_features(qq_debreath_ara_multi_instance_probe PRIVATE cxx_std_17)
+if(MSVC)
+    target_compile_options(qq_debreath_ara_multi_instance_probe PRIVATE /utf-8)
+endif()
+target_link_libraries(qq_debreath_ara_multi_instance_probe PRIVATE
+    QQDeBreath ARA_PlugIn_Library ARA_Host_Library juce::juce_audio_plugin_client
     juce::juce_audio_utils juce::juce_dsp)

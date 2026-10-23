@@ -1,8 +1,8 @@
 # QQDeBreath authoritative development handoff
 
-Current Stable: 1.25 (internal 1.0.25), designated by the user on 2026-09-22.
+Current Stable: 1.26 (internal 1.0.26), explicitly designated by the user on 2026-10-24.
 Current Candidate: none.
-Previous designated Stable: 1.23. Immediate rollback package: 1.24 (export fix accepted).
+Previous designated Stable and rollback: 1.25.
 Historical 1.23 rollback: 1.20; 1.21 and 1.22 were rejected candidates. Current rollback choices are listed above.
 Platforms: Windows x64 VST3; macOS arm64 VST3, x86_64 VST3, Universal 2 AU; ARA-capable shared plug-in.
 Development: JUCE 8.0.13, CMake, MSVC 2022 / Xcode.
@@ -67,3 +67,22 @@ The user reported the responsiveness improvement works well, designated 1.25 Sta
 User requested Plan C and D after Stable + Plan B completed. Plan B remains frozen and was not accessed. Public plug-in repository: Ziqing-Gu/QQDeBreath-ARA-VST3-AU, not the standalone repository. Build source commit: bb7a0352de9393cfd5f5a7ddbf74f1c22c89aead; macOS workflow run: 35668163947. Windows uses the existing user-accepted local 1.25 binary. All compiled first-party sources match that public commit, allowing only CRLF/LF normalization; the 764 ARA SDK files also match the recorded submodule checkout. Original bilingual 1.20 manuals are retained unchanged. Documentation follow-ups do not change the binary source.
 
 1.25 delivery status: all three macOS jobs completed successfully; Windows Actions was skipped. The four platform archives and original bilingual illustrated manuals are delivered with current bilingual installation guides. Public Release v1.25 contains nine verified assets including complete dependency source; all uploaded names, byte counts and SHA-256 digests match the local verified assets. New Mac host acceptance is not claimed.
+
+
+## 1.26 Stable — 2026-10-24 / ARA multi-source rendering
+
+中文：修复同一 ARA 文档超过 32 个音源后旧音源被淘汰、离线渲染为静音的问题。缓存随音源生命周期管理，局部恢复只更新指定音源，保留有效原始音频；支持持久 ID 重映射、工程级独立存档和未分析音源。素材在宿主模型线程允许读取时完成预载，不在实时回调中读取宿主音频。ARA 区域边界、邻接、增益及归一化系数预计算，保留原来的重叠优先级和 EQ 规则；离线渲染不再依赖 Playing 标志。
+
+English: Fixed older sources becoming silent when an ARA document exceeds 32 audio sources. Caches now follow source lifetime; filtered restore preserves unaffected edits and valid raw audio, including source-ID remapping, document-only archives and untouched sources. Missing audio is preloaded on the host model thread before playback, without host reads in the realtime callback. ARA region bounds, adjacency and gains are precomputed while retaining legacy overlap and EQ semantics. Offline rendering no longer requires the Playing flag.
+
+Status: Stable, explicitly designated by the user on 2026-10-24. Existing Windows build and five regression probes are reused; 1.26 is installed with file-hash parity. Previous Stable/rollback: 1.25. Original Studio One 7 project validation has not been reported; Stable designation does not imply a new DAW test or macOS build.
+
+Tradeoff: First source loading and undo reactivation can wait for synchronous host reads; active audio is still cached in full, so memory follows active source duration/channel count. Sources are released on undo deactivation or destruction. Host read failure does not publish partial audio and is retried at a later model edit/load request. Real Studio One 7 acceptance has not been reported. macOS builds are verified separately in the release record.
+
+兼容与升级：存档 schema 仍为 version 1；保留已有分析与 EQ 规则。旧版已渲染出的静音文件需要从原始事件重新渲染。
+Compatibility and upgrade: archive schema remains version 1 and existing analysis/EQ rules are preserved. Previously rendered silent files must be rendered again from original events.
+
+
+1.26 validation: real ARA 22 renderers / 44 sources, 44 audible and 0 silent; 48 legacy DSP cases match exactly. Existing transport, editor, export and waveform probes passed. Windows installation matches the validated binary. User-designated Stable and Plan B completion are recorded locally; the completed backup remains frozen and must not be accessed by later plans.
+1.26 implementation: source lifecycle callbacks own raw-audio preload and invalidation on the model thread; no host reads occur in the realtime renderer. Filtered archive restore preserves unrelated state and valid audio. Prepared immutable region metadata retains legacy overlap/tie/EQ semantics. Tests/LegacyAra125.h is a test-only frozen DSP oracle.
+Plan C/D: reuse the verified Windows binary, build the three macOS variants from this public source, and publish versioned artifacts. The user requested the existing illustrated manuals remain unchanged. No original-project Studio One acceptance is claimed.

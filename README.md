@@ -12,25 +12,25 @@
 
 # QQDeBreath ARA / VST3 / AU
 
-当前稳定版本 / Current stable version: **1.25 Stable**（用户验收通过 / user verified）
+当前稳定版本 / Current stable version: **1.26 Stable**（用户指定 / user-designated）
 
-1.25 已由用户验收并指定 Stable；本次同步 1.24 与 1.25 的完整更新记录。 / The user accepted 1.25 and designated it Stable; this update includes the complete 1.24 and 1.25 history.
+1.26 已由用户指定 Stable；本次补齐从 1.25 到 1.26 的更新，保留此前完整历史。 / The user designated 1.26 Stable; this update covers the changes since 1.25 and preserves the earlier history.
 
-## 下载 / Downloads — 1.25 Stable
+## 下载 / Downloads — 1.26 Stable
 
-**[最新正式版 / Latest Release](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/latest)** · [固定版本 / v1.25](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.25)
+**[最新正式版 / Latest Release](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/latest)** · [固定版本 / v1.26](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.26)
 
 | 文件 / Actual release asset | 选择说明 / Use |
 |---|---|
-| [QQDeBreath-1.25-Complete-Source.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-1.25-Complete-Source.zip) | 完整对应源码，不能直接安装 / Complete source, not an installer |
-| [QQDeBreath-1.25-Windows-macOS-INSTALL-ZH-CN.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-1.25-Windows-macOS-INSTALL-ZH-CN.txt) | 中文安装与升级说明 / Chinese installation guide |
-| [QQDeBreath-1.25-Windows-macOS-INSTALL.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-1.25-Windows-macOS-INSTALL.txt) | English installation / upgrade guide / 英文安装说明 |
-| [QQDeBreath-macOS-Apple-Silicon-1.25.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-macOS-Apple-Silicon-1.25.zip) | Apple Silicon 原生宿主 / native arm64 host — VST3 |
-| [QQDeBreath-macOS-AU-Universal-1.25.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-macOS-AU-Universal-1.25.zip) | macOS Universal 2 (arm64 + x86_64) — AU / Logic Pro |
-| [QQDeBreath-macOS-Intel-1.25.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-macOS-Intel-1.25.zip) | Intel 或 Rosetta x86_64 宿主 / Intel or Rosetta host — VST3 |
-| [QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf) | 中文图文手册，原 1.20 版 / Original 1.20 Chinese illustrated manual |
-| [QQDeBreath-Windows-x64-1.25.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQDeBreath-Windows-x64-1.25.zip) | Windows 10/11 x64 — VST3 |
-| [QQ_DeBreath_Tool_User_Manual_EN.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.25/QQ_DeBreath_Tool_User_Manual_EN.pdf) | 英文图文手册，原 1.20 版 / Original 1.20 English illustrated manual |
+| [QQDeBreath-1.26-Complete-Source.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.26/QQDeBreath-1.26-Complete-Source.zip) | 完整对应源码，不能直接安装 / Complete source, not an installer |
+| [QQDeBreath-1.26-Windows-macOS-INSTALL-ZH-CN.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.26/QQDeBreath-1.26-Windows-macOS-INSTALL-ZH-CN.txt) | 中文安装与升级说明 / Chinese installation guide |
+| [QQDeBreath-1.26-Windows-macOS-INSTALL.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.26/QQDeBreath-1.26-Windows-macOS-INSTALL.txt) | English installation / upgrade guide / 英文安装说明 |
+| [QQDeBreath-macOS-Apple-Silicon-1.26.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.26/QQDeBreath-macOS-Apple-Silicon-1.26.zip) | Apple Silicon 原生宿主 / native arm64 host — VST3 |
+| [QQDeBreath-macOS-AU-Universal-1.26.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.26/QQDeBreath-macOS-AU-Universal-1.26.zip) | macOS Universal 2 (arm64 + x86_64) — AU / Logic Pro |
+| [QQDeBreath-macOS-Intel-1.26.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.26/QQDeBreath-macOS-Intel-1.26.zip) | Intel 或 Rosetta x86_64 宿主 / Intel or Rosetta host — VST3 |
+| [QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.26/QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf) | 中文图文手册，原 1.20 版 / Original 1.20 Chinese illustrated manual |
+| [QQDeBreath-Windows-x64-1.26.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.26/QQDeBreath-Windows-x64-1.26.zip) | Windows 10/11 x64 — VST3 |
+| [QQ_DeBreath_Tool_User_Manual_EN.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.26/QQ_DeBreath_Tool_User_Manual_EN.pdf) | 英文图文手册，原 1.20 版 / Original 1.20 English illustrated manual |
 
 Windows 用户下载 Windows x64 VST3。Mac VST3 只选择匹配宿主架构的一包；Logic Pro 使用 AU。无需同时安装所有格式。Linux 本次不提供。
 Windows users need the Windows x64 VST3. For Mac VST3 choose one matching host architecture; Logic Pro uses AU. Install only the formats you need. Linux is not provided.
@@ -39,9 +39,22 @@ Windows users need the Windows x64 VST3. For Mac VST3 choose one matching host a
 **GitHub's automatic Source code (zip) / Source code (tar.gz) downloads are source snapshots, not installable plug-ins.**
 需要复现构建时使用 Complete-Source.zip，它同时包含 ARA SDK 和 JUCE；安装插件请使用相应平台 ZIP。For rebuilding, use Complete-Source.zip with its ARA SDK and JUCE; for installation, use the platform ZIP.
 
-恢复的两份图文手册是原有“独立版 1.11 / VST3-ARA 1.20”合订版，内容未修改。普通 VST3 请看第 3–5 页，ARA 请看第 6 页；第 1–2 页的独立应用不包含在本发行中。1.23 的播放同步以及 1.24/1.25 的导出与流畅性变化见当前安装说明和下方版本记录。
-The restored illustrated manuals retain their original Standalone 1.11 / VST3-ARA 1.20 edition. Read pages 3–5 for ordinary VST3 and page 6 for ARA. The standalone application discussed on pages 1–2 is not included here. Use the current installation guide and version notes for 1.23 transport and 1.24/1.25 export/responsiveness changes.
+恢复的两份图文手册是原有“独立版 1.11 / VST3-ARA 1.20”合订版，内容未修改。普通 VST3 请看第 3–5 页，ARA 请看第 6 页；第 1–2 页的独立应用不包含在本发行中。1.23 的播放同步、1.24/1.25 的导出与流畅性变化及 1.26 的 ARA 多音源修复见当前安装说明和下方版本记录。
+The restored illustrated manuals retain their original Standalone 1.11 / VST3-ARA 1.20 edition. Read pages 3–5 for ordinary VST3 and page 6 for ARA. The standalone application discussed on pages 1–2 is not included here. Use the current installation guide and version notes for 1.23 transport, 1.24/1.25 export/responsiveness and 1.26 ARA multi-source changes.
 
+
+## 1.26 Stable — 2026-10-24 / ARA multi-source rendering
+
+中文：修复同一 ARA 文档超过 32 个音源后旧音源被淘汰、离线渲染为静音的问题。缓存随音源生命周期管理，局部恢复只更新指定音源，保留有效原始音频；支持持久 ID 重映射、工程级独立存档和未分析音源。素材在宿主模型线程允许读取时完成预载，不在实时回调中读取宿主音频。ARA 区域边界、邻接、增益及归一化系数预计算，保留原来的重叠优先级和 EQ 规则；离线渲染不再依赖 Playing 标志。
+
+English: Fixed older sources becoming silent when an ARA document exceeds 32 audio sources. Caches now follow source lifetime; filtered restore preserves unaffected edits and valid raw audio, including source-ID remapping, document-only archives and untouched sources. Missing audio is preloaded on the host model thread before playback, without host reads in the realtime callback. ARA region bounds, adjacency and gains are precomputed while retaining legacy overlap and EQ semantics. Offline rendering no longer requires the Playing flag.
+
+Status: Stable, explicitly designated by the user on 2026-10-24. Existing Windows build and five regression probes are reused; 1.26 is installed with file-hash parity. Previous Stable/rollback: 1.25. Original Studio One 7 project validation has not been reported; Stable designation does not imply a new DAW test or macOS build.
+
+Tradeoff: First source loading and undo reactivation can wait for synchronous host reads; active audio is still cached in full, so memory follows active source duration/channel count. Sources are released on undo deactivation or destruction. Host read failure does not publish partial audio and is retried at a later model edit/load request. Real Studio One 7 acceptance has not been reported. macOS builds are verified separately in the release record.
+
+兼容与升级：存档 schema 仍为 version 1；保留已有分析与 EQ 规则。旧版已渲染出的静音文件需要从原始事件重新渲染。
+Compatibility and upgrade: archive schema remains version 1 and existing analysis/EQ rules are preserved. Previously rendered silent files must be rendered again from original events.
 
 ## 1.25 Stable — 2026-09-22 / Parameter and Auto Apply responsiveness
 

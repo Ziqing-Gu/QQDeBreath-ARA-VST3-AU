@@ -1,0 +1,6 @@
+QQDeBreath ARA 1.26 Stable
+Internal JUCE/VST3 version: 1.0.26
+Date: 2026-10-24
+Explicit user Stable designation. Previous Stable/rollback: 1.25.
+Multi-source ARA caching, filtered restore and prepared render metadata.
+Existing Windows build and regressions reused; original Studio One project acceptance not reported.

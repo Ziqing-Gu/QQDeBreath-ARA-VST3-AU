@@ -1,4 +1,4 @@
-﻿#include "WaveformEditorComponent.h"
+#include "WaveformEditorComponent.h"
 
 #include <cmath>
 #include <algorithm>
