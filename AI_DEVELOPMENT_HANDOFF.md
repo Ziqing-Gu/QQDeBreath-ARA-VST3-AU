@@ -1,5 +1,10 @@
 # QQDeBreath authoritative development handoff
 
+Current binary-source commit: 475fb76076f3c73ccd1dc14ce7e410ab676d0309 (tag v1.27).
+Current release: https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.27
+Current completion: Windows build/tests reused and installed with hash parity; Plan B/C/D complete. Three Mac builds passed architecture/version/signature checks. Nine Release assets and public downloads verified; original bilingual PDFs unchanged.
+No original Studio One 7 project acceptance is claimed.
+
 Current Stable: 1.27 (internal 1.0.27), user-designated on 2026-10-24.
 Current Candidate: none.
 Previous designated Stable and rollback: 1.26.

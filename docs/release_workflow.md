@@ -9,7 +9,7 @@ Document-only corrections reuse the existing verified artifacts and do not trigg
 
 当前 Stable 为 1.27，回滚版本为 1.26。权威交接文件：../AI_DEVELOPMENT_HANDOFF.md。
 Plan B 完成后冻结，后续阶段不得读取、核验或刷新。Plan C 复用 Plan A Windows 成品，云端默认只构建三类 macOS，并生成桌面实际成品目录。Plan D 在同一项目仓库发布 Release 和真实下载入口。
-本次发布补交不修改音频源码、不重新构建、不重新安装；原 Windows CI 已额外运行的事实保留，不能声称它未发生。
+历史文档补交记录：此前曾额外运行 Windows CI；这不属于本次 1.27 发布。1.27 复用本机已验证成品，Windows CI 跳过，三类 Mac 构建通过。
 
 1.26: Windows binaries and five local regression probes are reused. Only macOS arm64 VST3, x86_64 VST3 and Universal 2 AU are built by default. Numeric version changes also refresh the Windows PE resource through the CMake Info.txt dependency. Illustrated manuals are unchanged original editions.
 
