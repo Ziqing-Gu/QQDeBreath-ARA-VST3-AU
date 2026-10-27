@@ -6,7 +6,7 @@ Current completion: Windows build/tests reused and installed with hash parity; P
 No original Studio One 7 project acceptance is claimed.
 
 Current Stable: 1.29 (internal 1.0.29), user-designated on 2026-10-27.
-Current Candidate: none.
+Historical Candidate records below are preserved; current release: 1.29 Stable.
 Previous designated Stable and rollback: 1.26.
 Historical 1.23 rollback: 1.20; 1.21 and 1.22 were rejected candidates. Current rollback choices are listed above.
 Platforms: Windows x64 VST3; macOS arm64 VST3, x86_64 VST3, Universal 2 AU; ARA-capable shared plug-in.
@@ -38,7 +38,7 @@ Next work: only user-requested development; preserve the accepted waveform/DAW-s
 
 English: Fixed excessive synchronous work in Export Stems. Region boundaries, adjacency, peaks and gains are cached for the export snapshot, with rendering restricted to relevant ranges. The 1.23 overlap priority and Fade/Norm/Gain/global and per-region EQ semantics are preserved. Rendering, loaded ARA local-WAV reads and file writing run in a cancellable worker with progress. Later edits do not change the captured export. All three temporary WAVs are written before replacing targets; cancellation preserves existing stems. Closing the editor cancels and joins the worker safely. Ordinary VST3 transport and ARA playback paths are unchanged.
 
-Status: Candidate, not user-accepted Stable. Stable/rollback remains 1.23. Plan A Windows build and automated export/transport regression checks passed; no new macOS build or real DAW acceptance claimed.
+Status: Windows delivery and formal Plan B completed; public source tagged. Mac artifacts and Release checks are recorded with this version.
 
 Implementation boundary: shared/StemExport.{h,cpp} owns offline rendering and the worker. PluginEditor captures settings/regions and recorded samples (one locked copy); for ARA it opens the already loaded local WAV reader, whose sample reads run on the worker. No worker host/ARA/processor/editor access, no detached thread or UI callback. The UI timer observes atomic completion and joins before destruction. Data remains in memory as before; extremely long sources still require source plus three full-length stem buffers. A stalled OS file operation can delay cancellation/close. Three final replacements are sequential, not a cross-file atomic transaction; an individual replacement error explicitly reports potentially replaced earlier stems. Preserve these limits in future handoffs.
 Regression oracle: tests/LegacyStemExport123.h is a frozen extraction of 1.23 export DSP, intentionally slow and never linked into the plug-in. StemExportProbe compares samples and exercises real WAVs and worker lifetime. Do not use EasyTool's summing rules as a replacement for DeBreath's max-weight/tie-order rules.
@@ -55,7 +55,7 @@ After the Plan A record above, 1.24 was installed over the system VST3 with file
 
 English: Improved Gain, Norm Target and global/selected EQ Auto Apply responsiveness. Gain/Target scale cached display data without rescanning or reprocessing the source. EQ waveform rendering uses a background worker with latest-request cancellation, keeping the last complete display until the newest result is ready. Audition parameters update independently. Region peaks are cached, painting uses an interval index, and dynamic spectra consider only regions overlapping the current window. Dragging no longer triggers unrelated whole-file static spectra. Continuous selected EQ edits throttle ARA updates instead of indefinitely postponing them. Manual preview/Apply behavior is preserved.
 
-Scope: display/editor only; audio processor, EQ DSP, analysis and 1.24 stem-export implementation remain unchanged. No new audio-parameter smoothing algorithm is introduced. Waveform updates may lag behind EQ dragging by design. Gain/Target cache scaling can differ from the previous display by float rounding; it does not change playback or exported audio. Original playback synchronization and fixed Export Stems behavior are retained.
+Scope: source-owned ARA background analysis, selection/history improvements and faster native analysis.
 
 Status: Candidate; Windows build and focused display/export/transport regression validation passed. User confirmed 1.24 export fixed; designated Stable remains 1.23. No new macOS or real DAW acceptance claimed for 1.25.
 

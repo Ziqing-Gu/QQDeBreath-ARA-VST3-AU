@@ -1,0 +1,54 @@
+name: Recover QQDeBreath 1.29 AU packaging
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  macos-au-universal:
+    name: macOS Universal 2 AU/ARA recovery
+    runs-on: macos-15
+    steps:
+      - name: Checkout source and ARA SDK
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+          ref: cf0513a16faf0a90ec8677d0543d30d119baeae8
+
+      - name: Configure Universal 2 build
+        run: |
+          cmake -S . -B build-macos-au -G Xcode \
+            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+            -DQQDEBREATH_COPY_AFTER_BUILD=OFF
+
+      - name: Build AU
+        run: cmake --build build-macos-au --config Release --target QQDeBreath_AU --parallel 3
+
+      - name: Verify, ad-hoc sign, and package AU
+        shell: bash
+        run: |
+          set -euo pipefail
+          plugin_path="$(find build-macos-au -type d -name QQDeBreath.component -path '*Release*' | head -n 1)"
+          test -n "$plugin_path"
+          binary="$plugin_path/Contents/MacOS/QQDeBreath"
+          lipo -archs "$binary" | tee QQDeBreath-macOS-AU-Universal-architectures.txt
+          lipo "$binary" -verify_arch arm64 x86_64
+          codesign --force --deep --sign - "$plugin_path"
+          codesign --verify --deep --strict --verbose=2 "$plugin_path"
+          ditto -c -k --sequesterRsrc --keepParent "$plugin_path" QQDeBreath-macOS-AU-Universal-1.29.zip
+          cp docs/QQDeBreath-1.29-Windows-macOS-INSTALL.txt .
+          cp "docs/QQDeBreath-1.29-Windows-macOS-INSTALL-ZH-CN.txt" .
+
+      - name: Upload Universal AU
+        uses: actions/upload-artifact@v7
+        with:
+          name: QQDeBreath-macOS-AU-Universal-1.29
+          path: |
+            QQDeBreath-macOS-AU-Universal-1.29.zip
+            QQDeBreath-macOS-AU-Universal-architectures.txt
+            QQDeBreath-1.29-Windows-macOS-INSTALL.txt
+            QQDeBreath-1.29-Windows-macOS-INSTALL-ZH-CN.txt
+          if-no-files-found: error
