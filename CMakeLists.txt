@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(QQDeBreath VERSION 1.0.27 LANGUAGES C CXX)
+project(QQDeBreath VERSION 1.0.29 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -239,3 +239,20 @@ endif()
 target_link_libraries(qq_debreath_ara_multi_instance_probe PRIVATE
     QQDeBreath ARA_PlugIn_Library ARA_Host_Library juce::juce_audio_plugin_client
     juce::juce_audio_utils juce::juce_dsp)
+
+add_executable(qq_debreath_ara_selection_probe tests/AraSelectionProbe.cpp)
+target_include_directories(qq_debreath_ara_selection_probe PRIVATE src tests)
+if(MSVC)
+    target_compile_options(qq_debreath_ara_selection_probe PRIVATE /utf-8)
+endif()
+target_link_libraries(qq_debreath_ara_selection_probe PRIVATE QQDeBreath ARA_PlugIn_Library ARA_Host_Library juce::juce_audio_plugin_client juce::juce_audio_utils juce::juce_dsp)
+
+add_executable(qq_analysis_benchmark tests/AnalysisBenchmark.cpp tests/LegacyNativeAnalysis.cpp src/shared/NativeAnalysis.cpp)
+target_include_directories(qq_analysis_benchmark PRIVATE src src/shared tests)
+target_compile_features(qq_analysis_benchmark PRIVATE cxx_std_17)
+target_compile_definitions(qq_analysis_benchmark PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 QQ_ANALYSIS_PROFILE=1)
+if(MSVC)
+ target_compile_options(qq_analysis_benchmark PRIVATE /utf-8)
+ target_link_options(qq_analysis_benchmark PRIVATE /ENTRY:wmainCRTStartup)
+endif()
+target_link_libraries(qq_analysis_benchmark PRIVATE juce::juce_audio_utils juce::juce_dsp PUBLIC juce::juce_recommended_config_flags)

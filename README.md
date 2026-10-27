@@ -12,35 +12,56 @@
 
 # QQDeBreath ARA / VST3 / AU
 
-当前稳定版本 / Current stable version: **1.27 Stable**（用户指定 / user-designated）
+当前稳定版本 / Current stable version: **1.29 Stable**（用户指定 / user-designated）
 
-1.27 已由用户指定 Stable；本次补齐从 1.25 到 1.27 的更新（含 1.26），保留此前完整历史。 / The user designated 1.27 Stable; this update covers the changes since 1.25 and preserves the earlier history.
 
-## 下载 / Downloads — 1.27 Stable
 
-**[最新正式版 / Latest Release](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/latest)** · [固定版本 / v1.27](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.27)
 
-| 文件 / Actual release asset | 选择说明 / Use |
-|---|---|
-| [QQDeBreath-1.27-Complete-Source.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.27/QQDeBreath-1.27-Complete-Source.zip) | 完整对应源码，不能直接安装 / Complete source, not an installer |
-| [QQDeBreath-1.27-Windows-macOS-INSTALL-ZH-CN.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.27/QQDeBreath-1.27-Windows-macOS-INSTALL-ZH-CN.txt) | 中文安装与升级说明 / Chinese installation guide |
-| [QQDeBreath-1.27-Windows-macOS-INSTALL.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.27/QQDeBreath-1.27-Windows-macOS-INSTALL.txt) | English installation / upgrade guide / 英文安装说明 |
-| [QQDeBreath-macOS-Apple-Silicon-1.27.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.27/QQDeBreath-macOS-Apple-Silicon-1.27.zip) | Apple Silicon 原生宿主 / native arm64 host — VST3 |
-| [QQDeBreath-macOS-AU-Universal-1.27.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.27/QQDeBreath-macOS-AU-Universal-1.27.zip) | macOS Universal 2 (arm64 + x86_64) — AU / Logic Pro |
-| [QQDeBreath-macOS-Intel-1.27.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.27/QQDeBreath-macOS-Intel-1.27.zip) | Intel 或 Rosetta x86_64 宿主 / Intel or Rosetta host — VST3 |
-| [QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.27/QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf) | 中文图文手册，原 1.20 版 / Original 1.20 Chinese illustrated manual |
-| [QQDeBreath-Windows-x64-1.27.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.27/QQDeBreath-Windows-x64-1.27.zip) | Windows 10/11 x64 — VST3 |
-| [QQ_DeBreath_Tool_User_Manual_EN.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.27/QQ_DeBreath_Tool_User_Manual_EN.pdf) | 英文图文手册，原 1.20 版 / Original 1.20 English illustrated manual |
+## 2026-10-27 — Maintenance direction / 后续维护方向
 
-Windows 用户下载 Windows x64 VST3。Mac VST3 只选择匹配宿主架构的一包；Logic Pro 使用 AU。无需同时安装所有格式。Linux 本次不提供。
-Windows users need the Windows x64 VST3. For Mac VST3 choose one matching host architecture; Logic Pro uses AU. Install only the formats you need. Linux is not provided.
+用户决定把后续 ARA/VST3/AU 功能与修复集中到 QQEasyTool。QQDeBreath 插件版停留在 1.29；它可能是最后一版。保留现有源码、成品和历史下载，除非用户以后明确重新授权，不再修改 QQDeBreath 插件产品。本次已授权的 1.29 发布收尾继续完成。独立应用不在此次停止维护范围内。
 
-**GitHub 自动生成的 Source code (zip) / Source code (tar.gz) 是源码快照，不是可直接安装的插件。**
-**GitHub's automatic Source code (zip) / Source code (tar.gz) downloads are source snapshots, not installable plug-ins.**
-需要复现构建时使用 Complete-Source.zip，它同时包含 ARA SDK 和 JUCE；安装插件请使用相应平台 ZIP。For rebuilding, use Complete-Source.zip with its ARA SDK and JUCE; for installation, use the platform ZIP.
+Future ARA/VST3/AU development is focused on QQEasyTool. QQDeBreath plug-ins remain at 1.29, which may be the final plug-in release. Existing source, binaries and historical downloads remain available. Further QQDeBreath plug-in product changes require a new explicit user request. The already-authorized 1.29 publication is completed; the standalone application is separate.
 
-恢复的两份图文手册是原有“独立版 1.11 / VST3-ARA 1.20”合订版，内容未修改。普通 VST3 请看第 3–5 页，ARA 请看第 6 页；第 1–2 页的独立应用不包含在本发行中。1.23 的播放同步、1.24/1.25 的导出与流畅性变化及 1.26 的 ARA 多音源修复及 1.27 的编译兼容修复见当前安装说明和下方版本记录。
-The restored illustrated manuals retain their original Standalone 1.11 / VST3-ARA 1.20 edition. Read pages 3–5 for ordinary VST3 and page 6 for ARA. The standalone application discussed on pages 1–2 is not included here. Use the current installation guide and version notes for 1.23 transport, 1.24/1.25 export/responsiveness and 1.26 ARA multi-source and 1.27 build compatibility changes.
+## 1.29 Stable — Background ARA analysis and faster sparse-audio analysis / 2026-10-27
+
+中文：修正上一版把 ARA 分析绑定到编辑器、切换音源时取消分析的问题。分析现在由 ARA 文档按音源管理，切轨或关闭插件窗口后继续，完成后只写回原音源。另一轨可启动独立任务，两条低优先级工作线程由同一插件的实例共享，额外任务排队。复用已有原始音频缓存；工作线程不调用宿主音频读取或修改 ARA 模型。文档定时器在模型线程提交结果，保留各音源参数和分析前的撤销状态；显式取消、宿主归档恢复、音源内容失效和手工区域修改阻止过期结果覆盖。组合选择从当前音源结果刷新，避免旧组合快照遮住后台完成结果。进度显示排队状态或已耗时，不再使用估算百分比。
+
+English: ARA analysis is now owned by the document/source instead of the editor. Switching tracks or closing the editor keeps queued/running work alive; completion is committed to the originating source. Two low-priority workers are shared across instances of this plug-in, with additional jobs queued. Workers use immutable cached audio and never read host audio or mutate the ARA model. A document timer commits on the model thread, preserving per-source parameters and pre-analysis Undo. Explicit cancellation, host archive restore, invalidated audio and manual region edits reject stale work. Group views rebuild from live source regions. The UI shows queued/elapsed time.
+
+性能 / Performance: Native analysis uses exact order-statistic selection instead of full-array sorting, reuses computed spectral statistics for fully digital-silent frames, and suppresses denormal arithmetic in filter tails. Low-level nonzero audio still receives full analysis. Detection model, thresholds and region rules remain unchanged. Ordinary VST3/AU uses the same optimized analyzer; background continuity across ARA track selection applies to ARA mode.
+
+验证 / Validation: Eight original user WAVs were compared against the previous analyzer for each product (16 comparisons total). All region types and start/end sample/time boundaries matched. Overall measured speedup was 1.40–5.47x. These are native analyzer timings, not Cubase end-to-end UI timings. Input SHA-256 hashes were rechecked unchanged. The deterministic ARA regression includes two queued source jobs surviving selection/editor destruction, document-timer completion, group refresh, per-source parameters, cached input with no host reread, pre-analysis Undo, explicit Cancel and host archive Undo rejection. Existing selection/history, multi-instance audio, transport, waveform and product-specific probes pass. Audio processBlock and the ARA playback renderer are unchanged; factory load, internal/PE/moduleinfo 1.0.29 and installed SHA-256 parity pass.
+
+## 1.28 — Cubase ARA selection, Reload and edit history / 2026-10-27
+
+中文：ARA 编辑器响应宿主事件/轨道选择并切换对应波形、区域和参数，无需关闭窗口。显式 EditorView 选择不再被播放实例的区域归属过滤；选择改变跳过旧的一秒恢复间隔，直接使用已有音频缓存显示波形。Reload 保留现有编辑和参数。插件内部撤销/重做现覆盖区域编辑、Gain、Norm、EQ 和监听参数；历史按音源保存在处理器/ARA 文档中，Reload、切轨和重开窗口后仍可用。未应用预览先回滚，切轨前保存待提交修改；旧分析请求的迟到结果不会覆盖新轨。
+
+English: The ARA editor follows host event/track selection without closing its window, restoring the selected source's waveform, regions and parameters. Explicit EditorView selection takes priority over playback-renderer assignment; selection changes bypass the previous retry delay and reuse cached source audio. Reload preserves edits. Internal Undo/Redo covers region edits, Gain, Norm, EQ and monitor parameters, with per-source history owned by the processor/ARA document rather than an editor window. Unapplied previews roll back, pending edits flush before switching, and stale analysis completions cannot replace a different source.
+
+宿主集成 / Host integration: ARA edits queue source/modification content notifications; host archive Undo/Redo refreshes an already-open editor without echoing the restored state as a new edit. Ordinary VST3/AU custom-state edits notify the host through JUCE, and host state restore refreshes the editor. Exact Cubase history-panel entries and host-specific Undo grouping have not been validated in the user's real project. Native host history remains host-dependent; the plugin's own Undo/Redo works independently.
+
+验证 / Validation: Real ARA EditorView regression covers immediate selection callbacks, distinct A/B waveforms, 20 rapid switches, sequence-only selection, two views, multi-event selection, pending/preview edits, unavailable source retry, late analysis rejection, Reload/reopen Undo/Redo and filtered host archive Undo/Redo with no feedback notifications. Ordinary shared editor tests cover region/Gain/Norm/EQ history, reopen, custom-state notifications and host state restore. Existing audio/transport/waveform/ARA multi-instance probes pass; processBlock and ARA renderer code remain unchanged. Windows VST3 factory load, PE/moduleinfo 1.0.28 and installed SHA-256 parity pass.
+
+
+## 下载 / Downloads — 1.29 Stable
+
+[Latest Release](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/latest) · [v1.29](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.29)
+
+- [QQDeBreath-Windows-x64-1.29.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.29/QQDeBreath-Windows-x64-1.29.zip)
+- [QQDeBreath-macOS-Apple-Silicon-1.29.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.29/QQDeBreath-macOS-Apple-Silicon-1.29.zip)
+- [QQDeBreath-macOS-Intel-1.29.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.29/QQDeBreath-macOS-Intel-1.29.zip)
+- [QQDeBreath-macOS-AU-Universal-1.29.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.29/QQDeBreath-macOS-AU-Universal-1.29.zip)
+- [QQDeBreath-1.29-Complete-Source.zip](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.29/QQDeBreath-1.29-Complete-Source.zip)
+- [QQDeBreath-1.29-Windows-macOS-INSTALL-ZH-CN.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.29/QQDeBreath-1.29-Windows-macOS-INSTALL-ZH-CN.txt)
+- [QQDeBreath-1.29-Windows-macOS-INSTALL.txt](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.29/QQDeBreath-1.29-Windows-macOS-INSTALL.txt)
+- [QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.29/QQDeBreath-User-Manual-ZH-CN-Edition-1.20.pdf)
+- [QQ_DeBreath_Tool_User_Manual_EN.pdf](https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/download/v1.29/QQ_DeBreath_Tool_User_Manual_EN.pdf)
+
+Windows x64 VST3、macOS arm64 / Intel VST3、Universal 2 AU。选择与宿主架构匹配的包。
+GitHub 自动生成的 Source code (zip) / Source code (tar.gz) 不是可安装插件；Complete-Source.zip 包含 ARA SDK 与 JUCE。Automatic source archives are not installable plug-ins.
+
+两份 PDF 保留原 Standalone 1.11 / 插件 1.20 内容，未修改；当前更新见安装指引。 / Both original illustrated manuals remain unchanged. Use the installation guides for current changes.
 
 
 ## 1.27 Stable — 2026-10-24 / Apple Clang portability

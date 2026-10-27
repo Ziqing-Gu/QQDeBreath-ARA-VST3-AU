@@ -5,7 +5,7 @@ Current release: https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/ta
 Current completion: Windows build/tests reused and installed with hash parity; Plan B/C/D complete. Three Mac builds passed architecture/version/signature checks. Nine Release assets and public downloads verified; original bilingual PDFs unchanged.
 No original Studio One 7 project acceptance is claimed.
 
-Current Stable: 1.27 (internal 1.0.27), user-designated on 2026-10-24.
+Current Stable: 1.29 (internal 1.0.29), user-designated on 2026-10-27.
 Current Candidate: none.
 Previous designated Stable and rollback: 1.26.
 Historical 1.23 rollback: 1.20; 1.21 and 1.22 were rejected candidates. Current rollback choices are listed above.
@@ -105,3 +105,33 @@ Status: Stable, explicitly designated by the user on 2026-10-24. Windows is inst
 
 
 1.26 macOS build failed on ambiguous juce::File assignment; 1.27 resolves it. The original 1.26 tag and Windows history are preserved. No 1.26 macOS artifacts or formal Release were published.
+
+
+## 2026-10-27 — Maintenance direction / 后续维护方向
+
+用户决定把后续 ARA/VST3/AU 功能与修复集中到 QQEasyTool。QQDeBreath 插件版停留在 1.29；它可能是最后一版。保留现有源码、成品和历史下载，除非用户以后明确重新授权，不再修改 QQDeBreath 插件产品。本次已授权的 1.29 发布收尾继续完成。独立应用不在此次停止维护范围内。
+
+Future ARA/VST3/AU development is focused on QQEasyTool. QQDeBreath plug-ins remain at 1.29, which may be the final plug-in release. Existing source, binaries and historical downloads remain available. Further QQDeBreath plug-in product changes require a new explicit user request. The already-authorized 1.29 publication is completed; the standalone application is separate.
+
+## 1.29 Stable — Background ARA analysis and faster sparse-audio analysis / 2026-10-27
+
+中文：修正上一版把 ARA 分析绑定到编辑器、切换音源时取消分析的问题。分析现在由 ARA 文档按音源管理，切轨或关闭插件窗口后继续，完成后只写回原音源。另一轨可启动独立任务，两条低优先级工作线程由同一插件的实例共享，额外任务排队。复用已有原始音频缓存；工作线程不调用宿主音频读取或修改 ARA 模型。文档定时器在模型线程提交结果，保留各音源参数和分析前的撤销状态；显式取消、宿主归档恢复、音源内容失效和手工区域修改阻止过期结果覆盖。组合选择从当前音源结果刷新，避免旧组合快照遮住后台完成结果。进度显示排队状态或已耗时，不再使用估算百分比。
+
+English: ARA analysis is now owned by the document/source instead of the editor. Switching tracks or closing the editor keeps queued/running work alive; completion is committed to the originating source. Two low-priority workers are shared across instances of this plug-in, with additional jobs queued. Workers use immutable cached audio and never read host audio or mutate the ARA model. A document timer commits on the model thread, preserving per-source parameters and pre-analysis Undo. Explicit cancellation, host archive restore, invalidated audio and manual region edits reject stale work. Group views rebuild from live source regions. The UI shows queued/elapsed time.
+
+性能 / Performance: Native analysis uses exact order-statistic selection instead of full-array sorting, reuses computed spectral statistics for fully digital-silent frames, and suppresses denormal arithmetic in filter tails. Low-level nonzero audio still receives full analysis. Detection model, thresholds and region rules remain unchanged. Ordinary VST3/AU uses the same optimized analyzer; background continuity across ARA track selection applies to ARA mode.
+
+验证 / Validation: Eight original user WAVs were compared against the previous analyzer for each product (16 comparisons total). All region types and start/end sample/time boundaries matched. Overall measured speedup was 1.40–5.47x. These are native analyzer timings, not Cubase end-to-end UI timings. Input SHA-256 hashes were rechecked unchanged. The deterministic ARA regression includes two queued source jobs surviving selection/editor destruction, document-timer completion, group refresh, per-source parameters, cached input with no host reread, pre-analysis Undo, explicit Cancel and host archive Undo rejection. Existing selection/history, multi-instance audio, transport, waveform and product-specific probes pass. Audio processBlock and the ARA playback renderer are unchanged; factory load, internal/PE/moduleinfo 1.0.29 and installed SHA-256 parity pass.
+
+## 1.28 — Cubase ARA selection, Reload and edit history / 2026-10-27
+
+中文：ARA 编辑器响应宿主事件/轨道选择并切换对应波形、区域和参数，无需关闭窗口。显式 EditorView 选择不再被播放实例的区域归属过滤；选择改变跳过旧的一秒恢复间隔，直接使用已有音频缓存显示波形。Reload 保留现有编辑和参数。插件内部撤销/重做现覆盖区域编辑、Gain、Norm、EQ 和监听参数；历史按音源保存在处理器/ARA 文档中，Reload、切轨和重开窗口后仍可用。未应用预览先回滚，切轨前保存待提交修改；旧分析请求的迟到结果不会覆盖新轨。
+
+English: The ARA editor follows host event/track selection without closing its window, restoring the selected source's waveform, regions and parameters. Explicit EditorView selection takes priority over playback-renderer assignment; selection changes bypass the previous retry delay and reuse cached source audio. Reload preserves edits. Internal Undo/Redo covers region edits, Gain, Norm, EQ and monitor parameters, with per-source history owned by the processor/ARA document rather than an editor window. Unapplied previews roll back, pending edits flush before switching, and stale analysis completions cannot replace a different source.
+
+宿主集成 / Host integration: ARA edits queue source/modification content notifications; host archive Undo/Redo refreshes an already-open editor without echoing the restored state as a new edit. Ordinary VST3/AU custom-state edits notify the host through JUCE, and host state restore refreshes the editor. Exact Cubase history-panel entries and host-specific Undo grouping have not been validated in the user's real project. Native host history remains host-dependent; the plugin's own Undo/Redo works independently.
+
+验证 / Validation: Real ARA EditorView regression covers immediate selection callbacks, distinct A/B waveforms, 20 rapid switches, sequence-only selection, two views, multi-event selection, pending/preview edits, unavailable source retry, late analysis rejection, Reload/reopen Undo/Redo and filtered host archive Undo/Redo with no feedback notifications. Ordinary shared editor tests cover region/Gain/Norm/EQ history, reopen, custom-state notifications and host state restore. Existing audio/transport/waveform/ARA multi-instance probes pass; processBlock and ARA renderer code remain unchanged. Windows VST3 factory load, PE/moduleinfo 1.0.28 and installed SHA-256 parity pass.
+
+
+Current release: Stable; new Plan B completed and frozen. Reuse the delivered Windows binary. Mac builds and final release verification are recorded separately. History retains 64 steps per source in the current session; no full undo-chain persistence across restart is claimed.

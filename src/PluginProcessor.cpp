@@ -806,7 +806,19 @@ private:
 
 } // namespace
 
-QQDeBreathARADocumentController::~QQDeBreathARADocumentController() = default;
+QQDeBreathARADocumentController::QQDeBreathARADocumentController(const ARA::PlugIn::PlugInEntry* entry,
+    const ARA::ARADocumentControllerHostInstance* instance)
+    : juce::ARADocumentControllerSpecialisation(entry, instance), juce::Timer()
+{
+}
+
+QQDeBreathARADocumentController::~QQDeBreathARADocumentController()
+{
+    stopTimer();
+    analysisJobs.cancelAll();
+}
+#include "shared/AraAnalysisTasks.inc"
+
 
 bool QQDeBreathARADocumentController::cacheSourceAudioForPlayback(juce::ARAAudioSource& source,
                                                                  juce::String& status)
@@ -872,6 +884,7 @@ void QQDeBreathARADocumentController::requestSourceAudioCacheWarmup()
 
 void QQDeBreathARADocumentController::removeSourceAudioCache(const juce::String& fingerprint)
 {
+    analysisJobs.cancelForSource(fingerprint);
     const juce::ScopedLock lock(sourceAudioCacheLock);
     for (auto i = sourceAudioCaches.size(); --i >= 0;)
         if (sourceAudioCaches.getReference(i).sourceFingerprint == fingerprint)
@@ -1191,6 +1204,7 @@ void QQDeBreathAudioProcessor::setStateInformation(const void* data, int sizeInB
         }
 
         restoredStateInformation.store(true, std::memory_order_release);
+        editorStateRestoreRevision.fetch_add(1, std::memory_order_release);
         return;
     }
 
@@ -1200,6 +1214,7 @@ void QQDeBreathAudioProcessor::setStateInformation(const void* data, int sizeInB
     {
         parameters.replaceState(juce::ValueTree::fromXml(*xml));
         restoredStateInformation.store(true, std::memory_order_release);
+        editorStateRestoreRevision.fetch_add(1, std::memory_order_release);
     }
 }
 
@@ -1275,6 +1290,7 @@ void QQDeBreathAudioProcessor::stopRecording()
 
 void QQDeBreathAudioProcessor::clearRecording()
 {
+    editorHistory.clear();
     recordArmed.store(false, std::memory_order_release);
     recording.store(false, std::memory_order_release);
     recordedPreviewReady.store(false, std::memory_order_release);
@@ -1445,6 +1461,7 @@ void QQDeBreathAudioProcessor::setAnalysisResult(const QQDeBreathBridgeAnalysisR
         analysisRegionPeakCache = peakCache;
     }
     analysisPreviewReady.store(result.succeeded, std::memory_order_release);
+    analysisEditRevision.fetch_add(1, std::memory_order_release);
 }
 
 void QQDeBreathAudioProcessor::updateAnalysisRegionsPreservingCaches(const juce::Array<QQDeBreathBridgeRegion>& regions)
@@ -1464,6 +1481,7 @@ void QQDeBreathAudioProcessor::updateAnalysisRegionsPreservingCaches(const juce:
             ++analysisResult.noizeCount;
     }
     analysisPreviewReady.store(true, std::memory_order_release);
+    analysisEditRevision.fetch_add(1, std::memory_order_release);
 }
 
 QQDeBreathBridgeAnalysisResult QQDeBreathAudioProcessor::getAnalysisResult() const
@@ -1478,6 +1496,7 @@ void QQDeBreathAudioProcessor::clearAnalysisResult()
     const juce::ScopedLock lock(analysisLock);
     analysisResult = {};
     analysisRegionPeakCache.clear();
+    analysisEditRevision.fetch_add(1, std::memory_order_release);
 }
 
 void QQDeBreathAudioProcessor::setAraSourceInfo(const QQDeBreathARASourceInfo& info)
@@ -2042,6 +2061,7 @@ void QQDeBreathARADocumentController::upsertPersistentState(const QQDeBreathARAS
                                                             const QQDeBreathARAPlaybackParams& playbackParams,
                                                             const juce::Array<double>& regionPeakCache)
 {
+    analysisJobs.cancelForSource(sourceInfo.sourceFingerprint);
     if (sourceInfo.sourceFingerprint.isEmpty())
         return;
 
@@ -2076,8 +2096,7 @@ void QQDeBreathARADocumentController::upsertPersistentState(const QQDeBreathARAS
     }
 
     persistentStateRevision.fetch_add(1, std::memory_order_release);
-    if (auto* updateController = getDocumentController()->getHostModelUpdateController())
-        updateController->notifyDocumentDataChanged();
+    notifySourceEditsChanged(sourceInfo);
 }
 
 void QQDeBreathARADocumentController::updateRuntimePersistentState(const QQDeBreathARASourceInfo& sourceInfo,
@@ -2162,8 +2181,7 @@ void QQDeBreathARADocumentController::setPlaybackParamsForSource(
         return;
 
     persistentStateRevision.fetch_add(1, std::memory_order_release);
-    if (auto* updateController = getDocumentController()->getHostModelUpdateController())
-        updateController->notifyDocumentDataChanged();
+    notifySourceEditsChanged(sourceInfo);
 }
 
 bool QQDeBreathARADocumentController::getPersistentStateForSource(const juce::String& sourceFingerprint,
@@ -2284,8 +2302,7 @@ void QQDeBreathARADocumentController::setPlaybackParams(const QQDeBreathARAPlayb
     if (changed)
     {
         playbackParamsRevision.fetch_add(1, std::memory_order_release);
-        if (auto* updateController = getDocumentController()->getHostModelUpdateController())
-            updateController->notifyDocumentDataChanged();
+        getDocumentController()->notifyDocumentDataChanged();
     }
 }
 
@@ -2379,7 +2396,11 @@ bool QQDeBreathARADocumentController::doRestoreObjectsFromStream(juce::ARAInputS
             if (info.isComposite)
                 for (const auto& mapping : info.playbackMappings)
                     replace = replace || selected.contains(mapping.sourceFingerprint);
-            if (replace) persistentStates.remove(i);
+            if (replace)
+            {
+                editorHistory.erase(info.sourceFingerprint);
+                persistentStates.remove(i);
+            }
         }
         for (auto& state : restored)
         {
@@ -2396,6 +2417,8 @@ bool QQDeBreathARADocumentController::doRestoreObjectsFromStream(juce::ARAInputS
         playbackParamsRevision.fetch_add(1, std::memory_order_release);
         restoredPlaybackParams.store(true, std::memory_order_release);
     }
+    for (const auto& key : selected) { editorHistory.erase(key); analysisJobs.cancelForSource(key); }
+    archiveRestoreRevision.fetch_add(1, std::memory_order_release);
     // Restoring edits does not change raw audio. Lifecycle/content callbacks
     // invalidate only affected sources, and endEditing preloads any missing data.
     persistentStateRevision.fetch_add(1, std::memory_order_release);
@@ -2473,4 +2496,20 @@ bool QQDeBreathARADocumentController::doStoreObjectsToStream(juce::ARAOutputStre
         archivingController->notifyDocumentArchivingProgress(1.0f);
 
     return ok;
+}
+
+
+void QQDeBreathARADocumentController::notifySourceEditsChanged(const QQDeBreathARASourceInfo& info)
+{
+    auto* controller = getDocumentController();
+    if (controller->isHostEditingDocument()) return;
+    if (info.isComposite) controller->notifyDocumentDataChanged();
+    if (auto* document = controller->getDocument<juce::ARADocument>())
+        for (auto* source : document->getAudioSources<juce::ARAAudioSource>())
+        {
+            if (buildAraSourceFingerprint(*source) != info.sourceFingerprint) continue;
+            controller->notifyAudioSourceContentChanged(source, ARA::ContentUpdateScopes::samplesAreAffected());
+            for (auto* modification : source->getAudioModifications<juce::ARAAudioModification>())
+                controller->notifyAudioModificationContentChanged(modification, ARA::ContentUpdateScopes::samplesAreAffected());
+        }
 }

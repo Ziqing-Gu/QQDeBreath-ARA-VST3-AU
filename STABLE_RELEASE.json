@@ -1,25 +1,21 @@
 {
-  "product": "QQDeBreath ARA/VST3/AU",
-  "version": "1.27",
-  "internalVersion": "1.0.27",
+  "product": "QQDeBreath",
+  "version": "1.29",
+  "internalVersion": "1.0.29",
   "status": "Stable",
-  "previousDesignatedStable": "1.26",
-  "rollbackVersion": "1.26",
-  "confirmedAt": "2026-10-24T03:40:59.547160+08:00",
-  "confirmationSource": "User: 设为stable 执行plan BCD (in direct response to 1.27 scope confirmation)",
+  "previousDesignatedStable": "1.27",
+  "rollbackVersion": "1.27",
+  "previousDeliveredVersion": "1.28",
+  "confirmedAt": "2026-10-27T17:53:47.675854+08:00",
   "binaryChangedForStableMarking": false,
   "pluginFiles": [
     {
-      "path": "Contents/Resources/moduleinfo.json",
       "bytes": 1421,
-      "sha256": "96cac99ce3b7a8d9b7056a839e7c7400462e6f57f4ef77298bce79a8be7b93fa"
+      "sha256": "a371a18d3abcbabe7bb75837e643b3d074ef743b09ef7ff8f12563283167f212"
     },
     {
-      "path": "Contents/x86_64-win/QQDeBreath.vst3",
-      "bytes": 7476736,
-      "sha256": "2379130138e3f9e4cba4f79bdfe239b9ea4b8d86937057a2a725f092285ce12b"
+      "bytes": 7529472,
+      "sha256": "722667283771be18bd7b3a36a283c66f348b614243b96fe8a0491c96d255d77c"
     }
-  ],
-  "originalStudioOneProjectVerified": false,
-  "scope": "User-designated Stable; completed Windows build and five probes reused; Mac validation follows in Plan C."
+  ]
 }
