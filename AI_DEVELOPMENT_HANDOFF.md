@@ -1,13 +1,13 @@
 # QQDeBreath authoritative development handoff
 
-Current binary-source commit: 475fb76076f3c73ccd1dc14ce7e410ab676d0309 (tag v1.27).
-Current release: https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.27
-Current completion: Windows build/tests reused and installed with hash parity; Plan B/C/D complete. Three Mac builds passed architecture/version/signature checks. Nine Release assets and public downloads verified; original bilingual PDFs unchanged.
+Current binary-source commit: cf0513a16faf0a90ec8677d0543d30d119baeae8 (tag v1.29).
+Current release: https://github.com/Ziqing-Gu/QQDeBreath-ARA-VST3-AU/releases/tag/v1.29
+Current completion: Windows delivery reused; Plan B/C/D complete; three Mac packages and nine public release assets verified.
 No original Studio One 7 project acceptance is claimed.
 
 Current Stable: 1.29 (internal 1.0.29), user-designated on 2026-10-27.
 Historical Candidate records below are preserved; current release: 1.29 Stable.
-Previous designated Stable and rollback: 1.26.
+Previous designated Stable: 1.27; immediate delivered rollback: 1.28.
 Historical 1.23 rollback: 1.20; 1.21 and 1.22 were rejected candidates. Current rollback choices are listed above.
 Platforms: Windows x64 VST3; macOS arm64 VST3, x86_64 VST3, Universal 2 AU; ARA-capable shared plug-in.
 Development: JUCE 8.0.13, CMake, MSVC 2022 / Xcode.
@@ -38,7 +38,7 @@ Next work: only user-requested development; preserve the accepted waveform/DAW-s
 
 English: Fixed excessive synchronous work in Export Stems. Region boundaries, adjacency, peaks and gains are cached for the export snapshot, with rendering restricted to relevant ranges. The 1.23 overlap priority and Fade/Norm/Gain/global and per-region EQ semantics are preserved. Rendering, loaded ARA local-WAV reads and file writing run in a cancellable worker with progress. Later edits do not change the captured export. All three temporary WAVs are written before replacing targets; cancellation preserves existing stems. Closing the editor cancels and joins the worker safely. Ordinary VST3 transport and ARA playback paths are unchanged.
 
-Status: Windows delivery and formal Plan B completed; public source tagged. Mac artifacts and Release checks are recorded with this version.
+Status: Plan B/C/D complete. See docs/release-completion-1.29.md; prior completed stages are inherited.
 
 Implementation boundary: shared/StemExport.{h,cpp} owns offline rendering and the worker. PluginEditor captures settings/regions and recorded samples (one locked copy); for ARA it opens the already loaded local WAV reader, whose sample reads run on the worker. No worker host/ARA/processor/editor access, no detached thread or UI callback. The UI timer observes atomic completion and joins before destruction. Data remains in memory as before; extremely long sources still require source plus three full-length stem buffers. A stalled OS file operation can delay cancellation/close. Three final replacements are sequential, not a cross-file atomic transaction; an individual replacement error explicitly reports potentially replaced earlier stems. Preserve these limits in future handoffs.
 Regression oracle: tests/LegacyStemExport123.h is a frozen extraction of 1.23 export DSP, intentionally slow and never linked into the plug-in. StemExportProbe compares samples and exercises real WAVs and worker lifetime. Do not use EasyTool's summing rules as a replacement for DeBreath's max-weight/tie-order rules.
@@ -135,3 +135,6 @@ English: The ARA editor follows host event/track selection without closing its w
 
 
 Current release: Stable; new Plan B completed and frozen. Reuse the delivered Windows binary. Mac builds and final release verification are recorded separately. History retains 64 steps per source in the current session; no full undo-chain persistence across restart is claimed.
+
+
+Current completion record: [Plan B/C/D 1.29](docs/release-completion-1.29.md). Future plug-in development focuses on QQEasyTool.
